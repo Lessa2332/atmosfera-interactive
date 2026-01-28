@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Інтерактивний експеримент: чому на сонці спекотніше, ніж у тіні? Порівняння термометрів на сонці та в тіні дерева.">
+    <title>Чому «на сонці» спекотніше? Інтерактивний експеримент</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #e6f7ff 0%, #fff9e6 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: clamp(10px, 3vw, 20px);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: min(800px, 95vw);
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: clamp(20px, 4vw, 40px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #1565c0;
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            margin-bottom: clamp(10px, 3vw, 20px);
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            margin-bottom: clamp(15px, 4vw, 30px);
+            line-height: 1.4;
+        }
+
+        .environment {
+            position: relative;
+            width: 100%;
+            height: clamp(280px, 55vh, 400px);
+            min-height: 250px;
+            background: linear-gradient(to bottom, #87CEEB, #e1f5fe);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: clamp(15px, 4vw, 25px);
+            border: 4px solid #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: clamp(10px, 2vw, 20px);
+            transition: background 1s ease;
+        }
+
+        /* Сонце та промені */
+        .sun-source {
+            position: absolute;
+            top: clamp(10px, 2vw, 20px);
+            right: clamp(10px, 2vw, 30px);
+            width: clamp(50px, 12vw, 80px);
+            height: clamp(50px, 12vw, 80px);
+            background: radial-gradient(circle at 30% 30%, #FFEB3B, #FF9800);
+            border-radius: 50%;
+            box-shadow: 0 0 clamp(20px, 5vw, 40px) #fdd835;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .rays-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .ray {
+            position: absolute;
+            background: rgba(255, 193, 7, 0.3);
+            height: 2px;
+            width: 60%;
+            top: 15%;
+            right: 10%;
+            transform-origin: right center;
+        }
+
+        .object {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .tree {
+            font-size: clamp(60px, 15vw, 100px);
+            margin-bottom: -10px;
+        }
+
+        .sun-icon {
+            font-size: clamp(50px, 12vw, 80px);
+            margin-bottom: 10px;
+        }
+
+        .thermometer {
+            width: clamp(25px, 6vw, 40px);
+            height: clamp(120px, 30vh, 180px);
+            background: linear-gradient(to top, #e0e0e0, #f5f5f5);
+            border-radius: clamp(12px, 3vw, 20px);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #78909C;
+            margin-bottom: 10px;
+        }
+
+        .mercury {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, #2196F3, #EF5350);
+            transition: height 1.2s ease-out;
+        }
+
+        .temp-val {
+            font-weight: bold;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            margin: 8px 0;
+        }
+
+        .label {
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            color: #666;
+        }
+
+        .btn-toggle {
+            padding: clamp(12px, 3vw, 16px) clamp(20px, 5vw, 40px);
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            background: #ff9800;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255,152,0,0.3);
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+
+        .btn-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,152,0,0.4);
+        }
+
+        .btn-toggle.active-sun {
+            background: #f44336;
+        }
+
+        .explanation {
+            margin-top: clamp(15px, 4vw, 25px);
+            padding: clamp(15px, 3vw, 20px);
+            background: #fffde7;
+            border-radius: 12px;
+            border-left: 5px solid #fff176;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            line-height: 1.5;
+            color: #444;
+            text-align: left;
+        }
+
+        .explanation b {
+            color: #d32f2f;
+        }
+
+        .author-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Медіа-запити */
+        @media (max-width: 768px) {
+            .environment {
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: center;
+                gap: 20px;
+                padding-top: 60px;
+            }
+
+            .object {
+                flex-direction: row;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .tree, .sun-icon {
+                margin-right: 15px;
+                margin-bottom: 0;
+            }
+
+            .sun-source {
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .object {
+                flex-direction: column;
+            }
+
+ scopi           .tree, .sun-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            .environment {
+                height: 45vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Чому «на сонці» спекотніше?</h1>
+        <p class="subtitle">Увімкни сонце та порівняй показники термометрів у тіні та на прямому сонячному промінні</p>
+
+        <div class="environment" id="env">
+            <div class="sun-source" id="sun"></div>
+            <div class="rays-container" id="raysContainer">
+                <!-- Динамічні промені генеруються в JS -->
+            </div>
+
+            <div class="object">
+                <div class="tree">🌳</div>
+                <div class="thermometer">
+                    <div class="mercury" id="tempShadow"></div>
+                </div>
+                <div class="temp-val" id="valShadow">+20°C</div>
+                <div class="label">В тіні</div>
+            </div>
+
+            <div class="object">
+                <div class="sun-icon">☀️</div>
+                <div class="thermometer">
+                    <div class="mercury" id="tempSun"></div>
+                </div>
+                <div class="temp-val" id="valSun">+20°C</div>
+                <div class="label">На сонці</div>
+            </div>
+        </div>
+
+        <button class="btn-toggle" id="sunBtn">Увімкнути Сонце ☀️</button>
+
+        <div class="explanation" id="expText">
+            <b>Зараз тінь або ніч.</b> Повітря охололо, і обидва термометри показують однакову температуру повітря.
+        </div>
+
+        <div class="author-note">
+            Інтерактивний експеримент: чому термометр на сонці показує вищу температуру, ніж у тіні.<br>
+            Автор: Бохонок Олеся
+        </div>
+    </div>
+
+    <script>
+        const sunBtn = document.getElementById('sunBtn');
+        const sun = document.getElementById('sun');
+        const raysContainer = document.getElementById('raysContainer');
+        const env = document.getElementById('env');
+        const tSun = document.getElementById('tempSun');
+        const tShadow = document.getElementById('tempShadow');
+        const vSun = document.getElementById('valSun');
+        const vShadow = document.getElementById('valShadow');
+        const exp0 = document.getElementById('expText');
+
+        let sunOn = false;
+
+        // Генерація променів
+        function createRays() {
+            for (let i = 0; i < 8; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.transform = `rotate(${120 + i * 8}deg)`;
+                ray.style.width = `${50 + i * 5}%`;
+                ray.style.top = `${10 + i * 3}%`;
+                raysContainer.appendChild(ray);
+            }
+        }
+        createRays();
+
+        sunBtn.onclick = () => {
+            sunOn = !sunOn;
+
+            if (sunOn) {
+                sun.style.opacity = '1';
+397                raysContainer.style.opacity = '1';
+                env.style.background = 'linear-gradient(to bottom, #ffeb3b 10%, #87CEEB 60%, #e1f5fe)';
+                sunBtn.innerText = 'Вимкнути Сонце ☁️';
+                sunBtn.classList.add('active-sun');
+
+                // Нагрівання
+                tSun.style.height = '85%';
+                tShadow.style.height = '45%';
+                vSun.innerText = '+42°C';
+                vShadow.innerText = '+25°C';
+
+                expText.innerHTML = `<b>Сонце світить!</b> Термометр на прямому сонці сильно нагрівається від променів (до +42°C і вище). У тіні дерево захищає термометр — він показує <b>справжню температуру повітря</b> (+25°C).`;
+            } else {
+                sun.style.opacity = '0';
+                raysContainer.style.opacity = '0';
+                env.style.background = 'linear-gradient(to bottom, #87CEEB, #e1f5fe)';
+                sunBtn.innerText = 'Увімкнути Сонце ☀️';
+                sunBtn.classList.remove('active-sun');
+
+                // Охолодження
+                tSun.style.height = '30%';
+                tShadow.style.height = '30%';
+                vSun.innerText = '+20°C';
+                vShadow.innerText = '+20°C';
+
+                expText.innerHTML = `<b>Тінь або ніч.</b> Без прямого сонячного проміння обидва термометри показують однакову температуру повітря.`;
+            }
+        };
+    </script>
+</body>
+</html>

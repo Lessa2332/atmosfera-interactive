@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Інтерактивна симуляція: як Сонце нагріває атмосферу. Дізнайтесь, чому температура знижується з висотою та залежить від рельєфу.">
+    <title>Нагрівання атмосфери — інтерактивна модель</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+       
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            margin: 0;
+            padding: clamp(10px, 3vw, 20px);
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+       
+        .container {
+            max-width: min(1100px, 95vw);
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.98);
+            0.98);
+            border-radius: 20px;
+            padding: clamp(15px, 3vw, 25px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: clamp(15px, 3vw, 25px);
+        }
+       
+        h1 {
+            color: #1565c0;
+            text-align: center;
+            margin-bottom: clamp(8px, 2vw, 10px);
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            line-height: 1.3;
+        }
+       
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            margin-bottom: clamp(20px, 5vw, 30px);
+            line-height: 1.5;
+            max-width: 900px;
+            padding: 0 10px;
+        }
+       
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(20px, 4vw, 35px);
+        }
+       
+        .simulation-panel {
+            flex: 3;
+            min-width: min(100%, 400px);
+        }
+       
+        .theory-panel {
+            flex: 2;
+            min-width: min(100%, 300px);
+            background-color: #f9f9f9;
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: 15px;
+            border-left: 5px solid #7e57c2;
+        }
+       
+        .atmosphere-scene {
+            position: relative;
+            width: 100%;
+            height: clamp(500px, 70vh, 650px);
+            background: linear-gradient(to bottom,
+                #01579b 0%,
+                #0288d1 15%,
+                #03a9f4 30%,
+                #29b6f6 45%,
+                #81d4fa 60%,
+                #e1f5fe 100%
+            );
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: clamp(15px, 3vw, 20px);
+            border: 2px solid #90a4ae;
+        }
+       
+        .earth-surface {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, #5d4037, #8d6e63, #a1887f, #d7ccc8, #efebe9);
+            transition: background 0.8s ease;
+            z-index: 2;
+        }
+       
+        /* Різні рельєфи */
+        .earth-surface-mountains { background: linear-gradient(to top, #455a64, #546e7a, #78909c, #b0bec5, #eceff1); }
+        .earth-surface-desert { background: linear-gradient(to top, #ff8f00, #ffa726, #ffb74d, #ffcc80, #fff3e0); }
+        .earth-surface-forest { background: linear-gradient(to top, #2e7d32, #388e3c, #4caf50, #81c784, #c8e6c9); }
+        .earth-surface-water { background: linear-gradient(to top, #01579b, #0288d1, #039be5, #4fc3f7, #b3e5fc); }
+        .earth-surface-plain { background: linear-gradient(to top, #5d4037, #8d6e63, #a1887f, #d7ccc8, #efebe9); }
+       
+        .sun-container {
+            position: absolute;
+            top: clamp(20px, 4vw, 40px);
+            left: clamp(20px, 4vw, 40px);
+            z-index: 5;
+        }
+       
+        .sun {
+            width: clamp(60px, 12vw, 90px);
+            height: clamp(60px, 12vw, 90px);
+            background: radial-gradient(circle at 30% 30%, #FFEB3B, #FF9800);
+            border-radius: 50%;
+            box-shadow: 0 0 clamp(40px, 8vw, 60px) #FF9800;
+        }
+       
+        .sun-rays, .heat-arrows {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+       
+        .sun-ray, .heat-arrow {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(255,152,0,0.8), rgba(255,152,0,0));
+            width: 3px;
+            left: 50%;
+            height: 100%;
+            transform: translateX(-50%);
+            animation: sunRay 4s infinite linear;
+        }
+       
+        .sun-ray:nth-child(1) { left: 20%; animation-delay: 0s; }
+        .sun-ray:nth-child(2) { left: 35%; animation-delay: 0.5s; }
+        .sun-ray:nth-child(3) { left: 50%; animation-delay: 1s; }
+        .sun-ray:nth-child(4) { left: 65%; animation-delay: 1.5s; }
+        .sun-ray:nth-child(5) { left: 80%; animation-delay: 2s; }
+       
+        @keyframes sunRay {
+            0% { height: 0; }
+            100% { height: 100%; }
+        }
+       
+        .heat-arrow {
+            width: 10px;
+            height: 60px;
+            background: linear-gradient(to top, #d32f2f, #ff9800);
+            border-radius: 5px;
+            animation: heatArrow 3s infinite ease-out;
+        }
+       
+        .heat-arrow::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #d32f2f;
+            border-radius: 50%;
+            top: -8px;
+            left: -3px;
+        }
+       
+        .heat-arrow:nth-child(1) { left: 15%; animation-delay: 0s; }
+        .heat-arrow:nth-child(2) { left: 30%; animation-delay: 0.6s; }
+        .heat-arrow:nth-child(3) { left: 45%; animation-delay: 1.2s; }
+        .heat-arrow:nth-child(4) { left: 60%; animation-delay: 1.8s; }
+        .heat-arrow:nth-child(5) { left: 75%; animation-delay: 2.4s; }
+       
+        @keyframes heatArrow {
+            0% { bottom: 100px; opacity: 0.6; transform: scale(0.8); }
+            100% { bottom: 80%; opacity: 0; transform: scale(1.2); }
+        }
+       
+        .height-scale {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            bottom: 120px;
+            width: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 4;
+        }
+       
+        .height-mark {
+            color: white;
+            font-weight: bold;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+       
+        .height-line {
+            width: 20px;
+            height: 2px;
+            background: white;
+            margin-left: 10px;
+        }
+       
+        .temp-mark {
+            position: absolute;
+            left: -70px;
+            background: rgba(255,255,255,0.95);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            color: #d32f2f;
+        }
+       
+        .altitude-indicator {
+            position: absolute;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            z-index: 6;
+            border-left: 4px solid #5e35b1;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transition: top 0.3s ease, background 0.3s ease;
+        }
+       
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: clamp(15px, 4vw, 25px);
+        }
+       
+        .control-group {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+       
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #5e35b1;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+       
+        .slider {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+       
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #5e35b1;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(94,53,177,0.6);
+        }
+       
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            color: #555;
+            margin-top: 6px;
+        }
+       
+        .terrain-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+       
+        .terrain-button {
+            padding: clamp(10px, 2vw, 12px) clamp(15px, 3vw, 20px);
+            background: #5e35b1;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            transition: all 0.3s ease;
+            min-height: 50px;
+            flex: 1 1 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+       
+        .terrain-button:hover {
+            background: #4527a0;
+            transform: translateY(-3px);
+        }
+       
+        .terrain-button.active {
+            background: #311b92;
+            box-shadow: 0 0 15px rgba(94,53,177,0.6);
+        }
+       
+        .info-panel, .tasks {
+            margin-top: clamp(20px, 5vw, 30px);
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: 12px;
+        }
+       
+        .info-panel {
+            background: #e8f5e9;
+        }
+       
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #4caf50;
+        }
+       
+        .info-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            color: #388e3c;
+        }
+       
+        h3 {
+            color: #5e35b1;
+            margin-bottom: 15px;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+        }
+       
+        .theory-text, .key-concept p {
+            line-height: 1.6;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+       
+        .key-concept {
+            background: #ede7f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #7e57c2;
+        }
+       
+        .temperature-change {
+            background: linear-gradient(to right, #ff7043, #42a5f5);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+        }
+       
+        .tasks {
+            background: #fff3e0;
+        }
+       
+        .task-item {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ff9800;
+            counter-increment: task;
+        }
+       
+        .task-item::before {
+            content: counter(task) ".";
+            font-weight: bold;
+            color: #ff9800;
+            margin-right: 10px;
+        }
+       
+        .author-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+       
+        @media (max-width: 768px) {
+            .main-content { flex-direction: column; }
+            .height-scale { width: 70px; right: 10px; }
+            .temp-mark { left: -55px; font-size: 0.8rem; padding: 4px 8px; }
+            .altitude-indicator { font-size: 0.9rem; padding: 6px 10px; }
+        }
+       
+        @media (max-width: 480px) {
+            .atmosphere-scene { height: 450px; }
+            .terrain-button { flex: 1 1 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Нагрівання атмосфери</h1>
+        <p class="subtitle">
+            Сонце безпосередньо не нагріває повітря — промені проходять крізь нього. Тепло йде від нагрітої земної поверхні. Тому з висотою температура знижується.
+        </p>
+       
+        <div class="main-content">
+            <div class="simulation-panel">
+                <div class="atmosphere-scene" id="atmosphereScene">
+                    <div class="sun-container"><div class="sun"></div></div>
+                    <div class="earth-surface plain" id="earthSurface"></div>
+                   
+                    <div class="sun-rays">
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                        <div class="sun-ray"></div>
+                    </div>
+                   
+                    <div class="heat-arrows">
+                        <div class="heat for-arrow"></div>
+                        <div class="heat-arrow"></div>
+                        <div class="heat-arrow"></div>
+                        <div class="heat-arrow"></div>
+                        <div class="heat-arrow"></div>
+                    </div>
+                   
+                    <div class="height-scale" id="heightScale"></div>
+                    <div class="altitude-indicator" id="altitudeIndicator">0 км, +12°C</div>
+                </div>
+               
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label"><span>Висота</span><span id="altitudeValue">0 км</span></div>
+                        <input type="range" min="0" max="4" value="0" step="0.1" class="slider" id="altitudeSlider">
+                        <div class="value-display"><span>0 км</span><span>4 км</span></div>
+                    </div>
+                   
+                    <div class="control-group">
+                        <div class="control-label"><span>Температура поверхні</span><span id="tempValue">+12°C</span></div>
+                        <input type="range" min="-12" max="20" value="12" step="0.5" class="slider" id="tempSlider">
+                        <div class="value-display"><span>-12°C</span><span>+20°C</span></div>
+                    </div>
+                </div>
+               
+                <div class="terrain-controls">
+                    <button class="terrain-button active" data-terrain="plain">🌾 Рівнина</button>
+                    <button class="terrain-button" data-terrain="mountains">⛰️ Гори</button>
+                    <button class="terrain-button" data-terrain="desert">🏜️ Пустеля</button>
+                    <button class="terrain-button" data-terrain="forest">🌲 Ліс</button>
+                    <button class="terrain-button" data-terrain="water">🌊 Вода</button>
+                </div>
+               
+                <div class="info-panel">
+                    <div class="info-item"><div class="info-icon">☀️</div><div><strong>Прозорість повітря</strong><br>Промені Сонця проходять крізь повітря, не нагріваючи його.</div></div>
+                    <div class="info-item"><div class="info-icon">🔥</div><div><strong>Нагрівання від поверхні</strong><br>Земля нагрівається, а від неї — повітря.</div></div>
+                    <div class="info-item"><div class="info-icon">📉</div><div><strong>Температурний градієнт</strong><br>Зниження на ~6°C на кожен км висоти.</div></div>
+                </div>
+            </div>
+           
+            <div class="theory-panel">
+                <h3>Теорія</h3>
+                <div class="key-concept">
+                    <div class="concept-title">Прозорість атмосфери</div>
+                    <p>Сонячні промені вільно проходять крізь повітря, як крізь скло.</p>
+                </div>
+                <div class="key-concept">
+                    <div class="concept-title">Непряме нагрівання</div>
+                    <p>Тепло передається від нагрітої землі до повітря конвекцією та випромінюванням.</p>
+                </div>
+                <div class="key-concept">
+                    <div class="concept-title">Зниження температури з висотою</div>
+                    <p>Чим вище — тим далі від джерела тепла (земної поверхні).</p>
+                </div>
+                <div class="temperature-change">
+                    <strong>Середній градієнт:</strong> 6°C на 1 км висоти
+                </div>
+            </div>
+        </div>
+       
+        <div class="tasks">
+            <h3 style="color: #ff9800; text-align: center; margin-bottom: 15px;">Завдання</h3>
+            <div class="task-item">Опишіть поетапно процес нагрівання атмосфери за симуляцією.</div>
+            <div class="task-item">Чому температура знижується з висотою?</div>
+            <div class="task-item">Який середній температурний градієнт у тропосфері?</div>
+            <div class="task-item">Чому в горах холодніше, ніж на рівнині на тій самій широті?</div>
+        </div>
+       
+        <div class="author-note">
+            Інтерактивна модель: Нагрівання атмосфери та залежність температури від висоти.<br>
+            Автор: Бохонок Олеся
+        </div>
+    </div>
+
+    <script>
+        const scene = document.getElementById('atmosphereScene');
+        const earthSurface = document.getElementById('earthSurface');
+        const altitudeSlider = document.getElementById('altitudeSlider');
+        const altitudeValue = document.getElementById('altitudeValue');
+        const altitudeIndicator = document.getElementById('altitudeIndicator');
+        const tempSlider = document.getElementById('tempSlider');
+        const tempValue = document.getElementById('tempValue');
+        const heightScale = document.getElementById('heightScale');
+        const terrainButtons = document.querySelectorAll('.terrain-button');
+
+        const MAX_ALT = 4;
+        const GRADIENT = 6;
+        let surfaceTemp = 12;
+        let altitude = 0;
+
+        const terrainData = {
+            plain: { temp: 12, class: 'plain' },
+            mountains: { temp: 6, class: 'mountains' },
+            desert: { temp: 18, class: 'desert' },
+            forest: { temp: 10, class: 'forest' },
+            water: { temp: 8, class: 'water' }
+        };
+
+        function initScale() {
+            heightScale.innerHTML = '';
+            const sceneH = scene.clientHeight;
+            const groundH = 100;
+
+            for (let km = 0; km <= MAX_ALT; km++) {
+                const pos = (km / MAX_ALT) * (sceneH - groundH - 40) / sceneH * 100;
+                const temp = surfaceTemp - km * GRADIENT;
+
+                const mark = document.createElement('div');
+                mark.className = 'height-mark';
+                mark.style.top = `${pos}%`;
+                mark.innerHTML = `<span>${km} км</span><div class="height-line"></div>`;
+                heightScale.appendChild(mark);
+
+                const tempMark = document.createElement('div');
+                tempMark.className = 'temp-mark';
+                tempMark.style.top = `${pos}%`;
+                tempMark.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
+                tempMark.style.color = temp > 10 ? '#c62828' : temp > 0 ? '#d32f2f' : '#1565c0';
+                heightScale.appendChild(tempMark);
+            }
+        }
+
+        function updateAltitude() {
+            altitude = parseFloat(altitudeSlider.value);
+            altitudeValue.textContent = `${altitude.toFixed(1)} км`;
+            const temp = surfaceTemp - altitude * GRADIENT;
+            altitudeIndicator.textContent = `${altitude.toFixed(1)} км, ${temp > 0 ? '+' : ''}${Math.round(temp)}°C`;
+
+            const percent = (altitude / MAX_ALT) * 85;
+            altitudeIndicator.style.top = `${10 + percent}%`;
+        }
+
+        function updateSurfaceTemp() {
+            surfaceTemp = parseFloat(tempSlider.value);
+            tempValue.textContent = `${surfaceTemp > 0 ? '+' : ''}${surfaceTemp}°C`;
+            initScale();
+            updateAltitude();
+        }
+
+        function changeTerrain(type) {
+            const data = terrainData[type];
+            earthSurface.className = `earth-surface ${data.class}`;
+            surfaceTemp = data.temp;
+            tempSlider.value = surfaceTemp;
+            updateSurfaceTemp();
+        }
+
+        // Події
+        altitudeSlider.addEventListener('input', updateAltitude);
+        tempSlider.addEventListener('input', updateSurfaceTemp);
+
+        terrainButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                terrainButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                changeTerrain(btn.dataset.terrain);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            setTimeout(initScale, 100);
+        });
+
+        // Ініціалізація
+        initScale();
+        updateAltitude();
+        updateSurfaceTemp();
+    </script>
+</body>
+</html>
