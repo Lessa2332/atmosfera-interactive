@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тема 2: Хмари - Інтерактивне навчання</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Додаткові стилі для цієї сторінки */
+        .cloud-simulation {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+            transition: all 2s ease;
+        }
+        
+        .controls-panel {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> На головну
+    </a>
+    
+    <div class="container">
+        <div class="welcome-card">
+            <div class="header">
+                <h1><i class="fas fa-cloud"></i> Тема 2: Як утворюються хмари</h1>
+                <p class="subtitle">Дізнайся про різні види хмар та як вони формуються</p>
+            </div>
+            
+            <div class="content">
+                <div class="welcome-text">
+                    <h2>Хмари - це дивовижне явище!</h2>
+                    <p>Хмари утворюються, коли водяна пара в повітрі охолоджується і конденсується на крихітних частинках пилу.</p>
+                    
+                    <div class="cloud-simulation" id="cloudSimulation">
+                        <!-- Хмари будуть додані через JavaScript -->
+                    </div>
+                    
+                    <div class="controls-panel">
+                        <h3>Експериментуй:</h3>
+                        
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Температура:</span>
+                                <span id="tempValue">20°C</span>
+                            </div>
+                            <input type="range" id="temperature" min="-10" max="40" value="20" class="slider">
+                        </div>
+                        
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Вологість:</span>
+                                <span id="humidityValue">50%</span>
+                            </div>
+                            <input type="range" id="humidity" min="0" max="100" value="50" class="slider">
+                        </div>
+                        
+                        <button id="formClouds" class="start-button" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                            <i class="fas fa-cloud-rain"></i> Створити хмари
+                        </button>
+                    </div>
+                    
+                    <h3>Типи хмар:</h3>
+                    <div class="topics-grid">
+                        <div class="topic-link">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>Кучеві</span>
+                            <small>Білі пухнаті хмари</small>
+                        </div>
+                        <div class="topic-link">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Шаруваті</span>
+                            <small>Рівні сірі хмари</small>
+                        </div>
+                        <div class="topic-link">
+                            <i class="fas fa-feather-alt"></i>
+                            <span>Перисті</span>
+                            <small>Високі тонкі хмари</small>
+                        </div>
+                        <div class="topic-link">
+                            <i class="fas fa-cloud-showers-heavy"></i>
+                            <span>Дощові</span>
+                            <small>Темні хмари з дощем</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <a href="atmosphere.html" class="start-button" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); margin: 10px;">
+                    <i class="fas fa-arrow-left"></i> Попередня тема
+                </a>
+                <a href="page3.html" class="start-button" style="margin: 10px;">
+                    Наступна тема <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Симуляція хмар
+        document.addEventListener('DOMContentLoaded', function() {
+            const cloudSim = document.getElementById('cloudSimulation');
+            const tempSlider = document.getElementById('temperature');
+            const humiditySlider = document.getElementById('humidity');
+            const tempValue = document.getElementById('tempValue');
+            const humidityValue = document.getElementById('humidityValue');
+            const formCloudsBtn = document.getElementById('formClouds');
+            
+            tempSlider.addEventListener('input', function() {
+                tempValue.textContent = this.value + '°C';
+                updateBackground();
+            });
+            
+            humiditySlider.addEventListener('input', function() {
+                humidityValue.textContent = this.value + '%';
+                updateBackground();
+            });
+            
+            function updateBackground() {
+                const temp = parseInt(tempSlider.value);
+                const humidity = parseInt(humiditySlider.value);
+                
+                // Змінюємо колір неба в залежності від температури
+                let skyColor = temp > 25 ? '#87CEEB' : 
+                              temp > 15 ? '#87CEEB' : 
+                              temp > 5 ? '#A9C9E6' : 
+                              temp > -5 ? '#B0C4DE' : '#C0C8D0';
+                
+                cloudSim.style.background = `linear-gradient(to bottom, ${skyColor} 0%, #E0F7FA 100%)`;
+            }
+            
+            formCloudsBtn.addEventListener('click', function() {
+                createClouds();
+            });
+            
+            function createClouds() {
+                // Очищаємо попередні хмари
+                cloudSim.innerHTML = '';
+                
+                const temp = parseInt(tempSlider.value);
+                const humidity = parseInt(humiditySlider.value);
+                
+                // Логіка утворення хмар
+                if (humidity > 70 && temp < 25) {
+                    // Створюємо хмари
+                    const cloudCount = Math.floor(humidity / 20);
+                    
+                    for (let i = 0; i < cloudCount; i++) {
+                        const cloud = document.createElement('div');
+                        cloud.className = 'cloud';
+                        
+                        // Випадкові параметри хмари
+                        const size = 60 + Math.random() * 80;
+                        const left = Math.random() * 80;
+                        const top = 20 + Math.random() * 60;
+                        const opacity = 0.7 + Math.random() * 0.3;
+                        
+                        cloud.style.width = size + 'px';
+                        cloud.style.height = size * 0.6 + 'px';
+                        cloud.style.left = left + '%';
+                        cloud.style.top = top + '%';
+                        cloud.style.opacity = opacity;
+                        
+                        // Додаємо анімацію
+                        cloud.style.animation = `float ${10 + Math.random() * 20}s linear infinite`;
+                        
+                        cloudSim.appendChild(cloud);
+                    }
+                    
+                    // Додаємо CSS для анімації
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes float {
+                            0% { transform: translateX(0px); }
+                            50% { transform: translateX(20px); }
+                            100% { transform: translateX(0px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                } else {
+                    // Показуємо повідомлення
+                    const message = document.createElement('div');
+                    message.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: white;
+                        padding: 20px;
+                        border-radius: 10px;
+                        text-align: center;
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    `;
+                    message.innerHTML = `
+                        <h3>💡 Умови для хмар:</h3>
+                        <p>Високі вологість (>70%) і середня температура (<25°C)</p>
+                        <p>Постав вологість вище 70% і натисни знову!</p>
+                    `;
+                    cloudSim.appendChild(message);
+                }
+            }
+            
+            // Створюємо початкові хмари
+            createClouds();
+        });
+    </script>
+</body>
+</html>
