@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="Інтерактивна модель: річний рух Землі, сонцестояння, тропіки та полярні кола. Дізнайтесь, чому змінюється тривалість дня протягом року.">
+    <title>Сонцестояння, тропіки та полярні кола — інтерактивна модель</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            margin: 0;
+            padding: clamp(10px, 3vw, 20px);
+            background: #020408;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: min(1100px, 95vw);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: clamp(15px, 3vw, 25px);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            margin-bottom: clamp(10px, 3vw, 20px);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: clamp(0.9rem, 2.8vw, 1.1rem);
+            margin-bottom: clamp(20px, 5vw, 30px);
+            line-height: 1.5;
+        }
+
+        .space {
+            position: relative;
+            width: 100%;
+            height: clamp(400px, 70vh, 600px);
+            min-height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1500px;
+            overflow: hidden;
+            border-radius: 15px;
+            background: radial-gradient(circle at center, #0a1a3f 0%, #000 100%);
+            margin-bottom: clamp(15px, 4vw, 25px);
+        }
+
+        .sun {
+            position: absolute;
+            width: clamp(70px, 15vw, 100px);
+            height: clamp(70px, 15vw, 100px);
+            background: radial-gradient(circle, #fff, #ffcc00, #ff6600);
+            border-radius: 50%;
+            box-shadow: 0 0 clamp(60px, 12vw, 100px) #ff6600;
+            z-index: 5;
+        }
+
+        .orbit {
+            position: absolute;
+            width: clamp(600px, 80vw, 800px);
+            height: clamp(300px, 40vw, 400px);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: rotateX(75deg);
+        }
+
+        .earth-system {
+            position: absolute;
+            width: clamp(100px, 20vw, 140px);
+            height: clamp(100px, 20vw, 140px);
+            transition: transform 0.1s linear;
+            transform-style: preserve-3d;
+        }
+
+        .earth {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a4a91, #050c1a);
+            border-radius: 50%;
+            position: relative;
+            transform: rotateZ(23.5deg);
+            overflow: hidden;
+            box-shadow: inset 20px 0 40px rgba(0,0,0,0.9);
+            transition: box-shadow 0.5s ease;
+        }
+
+        .continents {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1024px-Equirectangular_projection_SW.jpg') no-repeat center center;
+            background-size: cover;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            border-top: 1px dashed rgba(255,255,255,0.4);
+            left: 0;
+            pointer-events: none;
+        }
+
+        .equator { top: 50%; border-top: 2px solid #ffeb3b; }
+        .tropic-n { top: 36.5%; border-top: 1px solid #ff9800; }
+        .tropic-s { top: 63.5%; border-top: 1px solid #ff9800; }
+        .arctic-n { top: 16.5%; border-top: 1px dotted #00ffff; }
+        .arctic-s { top: 83.5%; border-top: 1px dotted #00ffff; }
+
+        .axis {
+            position: absolute;
+            top: -25%;
+            left: 50%;
+            width: 3px;
+            height: 150%;
+            background: #ff4d4d;
+            transform: translateX(-50%);
+            opacity: 0.6;
+        }
+
+        .point {
+            position: absolute;
+            font-size: clamp(0.8rem, 2.2vw, 1rem);
+            color: #ccc;
+            text-align: center;
+            width: 120px;
+            text-shadow: 1px 1px 3px black;
+        }
+
+        .info-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: clamp(15px, 3vw, 25px);
+            border-radius: 15px;
+            line-height: 1.6;
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+            color: #ffcc00;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            text-align: center;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        .polar-status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 5px solid #2980b9;
+            background: rgba(255,255,255,0.1);
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        .slider-container {
+            text-align: center;
+            margin: clamp(20px, 5vw, 30px) 0;
+        }
+
+        input[type=range] {
+            width: 90%;
+            max-width: 600px;
+            height: 12px;
+            border-radius: 6px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ffcc00;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ffcc00;
+        }
+
+        .hint {
+            font-size: clamp(0.8rem, 2.2vw, 0.95rem);
+            color: #888;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .author-note {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .space { height: 55vh; }
+            .point { font-size: 0.9rem; width: 100px; }
+        }
+
+        @media (max-width: 480px) {
+            .space { height: 50vh; }
+            .point { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Сонцестояння та географічні паралелі</h1>
+        <p class="subtitle">Переміщуйте повзунок, щоб побачити, як змінюється освітлення Землі протягом року через нахил осі (23.5°)</p>
+
+        <div class="space">
+            <div class="sun"></div>
+            <div class="orbit"></div>
+
+            <div class="point" style="top: 88%; left: calc(50% - 60px);"><b>21 грудня</b><br>Зимове сонцестояння</div>
+            <div class="point" style="top: 8%; left: calc(50% - 60px);"><b>21 червня</b><br>Літнє сонцестояння</div>
+            <div class="point" style="left: 8%; top: 45%;"><b>21 березня</b><br>Весняне рівнодення</div>
+            <div class="point" style="right: 8%; top: 45%;"><b>23 вересня</b><br>Осіннє рівнодення</div>
+
+            <div class="earth-system" id="earthCont">
+                <div class="axis"></div>
+                <div class="earth" id="globe">
+                    <div class="continents"></div>
+                    <div class="line equator"></div>
+                    <div class="line tropic-n"></div>
+                    <div class="line tropic-s"></div>
+                    <div class="line arctic-n"></div>
+                    <div class="line arctic-s"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3 id="dateLabel">21 червня — Літнє сонцестояння</h3>
+            <p id="descText">Сонце стоїть прямо над <span class="highlight">Північним тропіком</span> (23.5° пн. ш.). У Північній півкулі — найдовший день року.</p>
+            <div class="polar-status" id="polarStatus">
+                ☀️ <b>Полярний день:</b> За Північним полярним колом (66.5° пн. ш.) Сонце не заходить.
+            </div>
+        </div>
+
+        <div class="slider-container">
+            <input type="range" id="orbitSlider" min="0" max="359" value="90">
+            <p class="hint">👆 Переміщуйте повзунок, щоб змінити дату (повний оберт — 1 рік)</p>
+        </div>
+
+        <div class="author-note">
+            Інтерактивна модель: річний рух Землі, сонцестояння, тропіки та полярні кола.<br>
+            Автор: Бохонок Олеся
+        </div>
+    </div>
+
+    <script>
+        const earthCont = document.getElementById('earthCont');
+        const globe = document.getElementById('globe');
+        const slider = document.getElementById('orbitSlider');
+        const dateLabel = document.getElementById('dateLabel');
+        const descText = document.getElementById('descText');
+        const polarStatus = document.getElementById('polarStatus');
+
+        function update(angle) {
+            const rad = angle * (Math.PI / 180);
+            const orbitWidth = 360;
+            const orbitHeight = 180;
+            const x = orbitWidth * Math.cos(rad);
+            const y = orbitHeight * Math.sin(rad);
+
+            earthCont.style.transform = `translate(${x}px, ${y}px)`;
+
+            // Тінь від Сонця
+            const shadowAngle = angle + 90;
+            const shadowRad = shadowAngle * (Math.PI / 180);
+            const shadowX = Math.cos(shadowRad) * 50;
+            const shadowY = Math.sin(shadowRad) * 30;
+            globe.style.boxShadow = `inset ${-shadowX}px ${-shadowY}px 60px rgba(0,0,0,0.95)`;
+
+            // Визначення сезону
+            let season = "";
+            let tropic = "";
+            let polar = "";
+            let borderColor = "#2980b9";
+
+            if (angle >= 70 && angle <= 110) { // Зимове сонцестояння (грудень)
+                season = "21 грудня — Зимове сонцестояння";
+                tropic = "Південним тропіком (23.5° пд. ш.)";
+                polar = "🌙 <b>Полярна ніч:</b> За Північним полярним колом Сонце не сходить.";
+                borderColor = "#c0392b";
+            } else if (angle >= 250 && angle <= 290) { // Літнє сонцестояння (червень)
+                season = "21 червня — Літнє сонцестояння";
+                tropic = "Північним тропіком (23.5° пн. ш.)";
+                polar = "☀️ <b>Полярний день:</b> За Північним полярним колом Сонце не заходить.";
+                borderColor = "#2980b9";
+            } else if ((angle >= 340 || angle <= 20) || (angle >= 160 && angle <= 200)) { // Рівнодення
+                season = "Рівнодення (березень / вересень)";
+                tropic = "екватором";
+                polar = "⚖️ <b>Баланс:</b> День = ночі на всій Землі. Сонце сходить точно на сході.";
+                borderColor = "#27ae60";
+            } else {
+                season = getMonthName(angle);
+                tropic = "між тропіками";
+                polar = "☀️ День і ніч змінюються залежно від широти.";
+                borderColor = "#7f8c8d";
+            }
+
+            dateLabel.textContent = season;
+            descText.innerHTML = `Сонце стоїть прямо над <span class="highlight">${tropic}</span>. У Північній півкулі — відповідний сезон.`;
+            polarStatus.innerHTML = polar;
+            polarStatus.style.borderLeftColor = borderColor;
+        }
+
+        function getMonthName(angle) {
+            const months = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень", "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
+            const monthIndex = Math.floor((angle + 15) / 30) % 12;
+            return `${months[monthIndex]} — перехідний період`;
+        }
+
+        slider.addEventListener('input', (e) => update(parseInt(e.target.value)));
+        update(90); // Початкове: червень
+    </script>
+</body>
+</html>
