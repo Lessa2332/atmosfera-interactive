@@ -4,8 +4,263 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Привітання - Інтерактивне навчання</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0F172A;
+            color: #E2E8F0;
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .welcome-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 24px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            gap: 40px;
+            margin: 40px 0;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .welcome-image {
+            flex: 1;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .child-avatar {
+            font-size: 140px;
+            color: #00FFFF;
+            text-shadow: 0 0 30px #00FFFF;
+            margin-bottom: 20px;
+        }
+
+        .science-icons i {
+            font-size: 60px;
+            margin: 12px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .science-icons i:nth-child(1) { color: #FFB800; text-shadow: 0 0 30px #FFB800; animation-delay: 0s; }     /* sun */
+        .science-icons i:nth-child(2) { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; animation-delay: 0.3s; } /* cloud */
+        .science-icons i:nth-child(3) { color: #39FF14; text-shadow: 0 0 30px #39FF14; animation-delay: 0.6s; } /* wind */
+        .science-icons i:nth-child(4) { color: #FF9500; text-shadow: 0 0 30px #FF9500; animation-delay: 0.9s; } /* temperature */
+
+        .welcome-text {
+            flex: 2;
+        }
+
+        .welcome-text h2 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .features {
+            display: flex;
+            gap: 20px;
+            margin: 24px 0;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .feature:nth-child(1) i { color: #00FFFF; text-shadow: 0 0 15px #00FFFF; }
+        .feature:nth-child(2) i { color: #FF66CC; text-shadow: 0 0 15px #FF66CC; }
+        .feature:nth-child(3) i { color: #FFB800; text-shadow: 0 0 15px #FFB800; }
+
+        .welcome-text ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .welcome-text li {
+            margin: 12px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .welcome-text li::before {
+            content: "✦";
+            color: #00FFFF;
+            position: absolute;
+            left: 0;
+            text-shadow: 0 0 10px #00FFFF;
+        }
+
+        .start-section {
+            margin-top: 50px;
+        }
+
+        .start-section h3 {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .topic-card {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 24px;
+            margin: 30px 0;
+            border: 2px solid #FF9500;
+            box-shadow: 0 0 25px rgba(255, 149, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .topic-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 45px rgba(255, 149, 0, 0.8);
+        }
+
+        .topic-icon {
+            font-size: 80px;
+            color: #FF9500;
+            text-shadow: 0 0 30px #FF9500;
+            margin-right: 24px;
+        }
+
+        .topic-info h4 {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .start-button {
+            margin-left: auto;
+            padding: 16px 32px;
+            background: linear-gradient(45deg, #FF9500, #FFB800);
+            color: #000;
+            font-weight: 900;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 0 25px #FF9500;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px #FF9500;
+        }
+
+        .all-topics {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .topic-link {
+            --accent: #00FFFF; /* default */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            text-decoration: none;
+            color: #E2E8F0;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .topic-link:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 0 40px var(--accent);
+        }
+
+        .topic-link i {
+            font-size: 56px;
+            color: var(--accent);
+            text-shadow: 0 0 25px var(--accent);
+            margin-bottom: 12px;
+        }
+
+        /* Акцентні кольори для тем */
+        .accent-orange { --accent: #FF9500; }
+        .accent-cyan   { --accent: #00FFFF; }
+        .accent-lime   { --accent: #39FF14; }
+        .accent-purple { --accent: #C77DFF; }
+        .accent-blue   { --accent: #0099FF; }
+        .accent-magenta{ --accent: #FF66CC; }
+        .accent-green  { --accent: #32CD32; }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+
+        .footer .hint {
+            margin-top: 12px;
+            font-size: 18px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,7 +269,7 @@
                 <h1><i class="fas fa-smile"></i> Вітаємо!</h1>
                 <p class="subtitle">Привіт, друже! Ласкаво просимо до світу дивовижної науки</p>
             </div>
-            
+
             <div class="content">
                 <div class="welcome-image">
                     <div class="child-avatar">
@@ -27,11 +282,11 @@
                         <i class="fas fa-temperature-high"></i>
                     </div>
                 </div>
-                
+
                 <div class="welcome-text">
                     <h2>Привіт, майбутній вчений!</h2>
                     <p>Сьогодні ми відправимося у захоплюючу подорож до світу <strong>АТМОСФЕРИ</strong> - повітряної оболонки нашої планети!</p>
-                    
+
                     <div class="features">
                         <div class="feature">
                             <i class="fas fa-play-circle"></i>
@@ -46,7 +301,7 @@
                             <span>Прості пояснення</span>
                         </div>
                     </div>
-                    
+
                     <p>Ти дізнаєшся:</p>
                     <ul>
                         <li>Чому змінюється температура вдень</li>
@@ -56,11 +311,11 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="start-section">
                 <h3>Готовий розпочати навчання?</h3>
-                <p>Обери першу тему:</p>
-                
+                <p style="text-align:center; opacity:0.9;">Обери першу тему:</p>
+
                 <div class="topic-card">
                     <div class="topic-icon">
                         <i class="fas fa-temperature-half"></i>
@@ -73,59 +328,55 @@
                         Почати урок <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
-                
+
                 <div class="all-topics">
                     <p>Або переглянь всі теми:</p>
                     <div class="topics-grid">
-                        <a href="atmosphere.html" class="topic-link">
-                            <i class="fas fa-sun"></i> Температура
+                        <a href="atmosphere.html" class="topic-link accent-orange">
+                            <i class="fas fa-sun"></i>
+                            Температура
                         </a>
-                        <a href="page2.html" class="topic-link">
-                            <i class="fas fa-cloud"></i> Хмари
+                        <a href="page2.html" class="topic-link accent-cyan">
+                            <i class="fas fa-cloud"></i>
+                            Хмари
                         </a>
-                        <a href="page3.html" class="topic-link">
-                            <i class="fas fa-wind"></i> Вітер
+                        <a href="page3.html" class="topic-link accent-lime">
+                            <i class="fas fa-wind"></i>
+                            Вітер
                         </a>
-                        <a href="page4.html" class="topic-link">
-                            <i class="fas fa-tachometer-alt"></i> Тиск
+                        <a href="page4.html" class="topic-link accent-purple">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Тиск
                         </a>
-                        <a href="page5.html" class="topic-link">
-                            <i class="fas fa-umbrella"></i> Опади
+                        <a href="page5.html" class="topic-link accent-blue">
+                            <i class="fas fa-umbrella"></i>
+                            Опади
                         </a>
-                        <a href="page6.html" class="topic-link">
-                            <i class="fas fa-layer-group"></i> Шари атмосфери
+                        <a href="page6.html" class="topic-link accent-magenta">
+                            <i class="fas fa-layer-group"></i>
+                            Шари атмосфери
                         </a>
-                        <a href="page7.html" class="topic-link">
-                            <i class="fas fa-seedling"></i> Парниковий ефект
+                        <a href="page7.html" class="topic-link accent-green">
+                            <i class="fas fa-seedling"></i>
+                            Парниковий ефект
                         </a>
                     </div>
                 </div>
             </div>
-            
+
             <div class="footer">
                 <p>Створено для цікавого навчання дітей</p>
                 <p class="hint">👆 Натискай на кнопки, щоб перейти до уроків!</p>
             </div>
         </div>
     </div>
-    
+
     <script>
-        // Анімація іконок
-        document.addEventListener('DOMContentLoaded', function() {
-            const icons = document.querySelectorAll('.science-icons i');
-            icons.forEach((icon, index) => {
-                icon.style.animationDelay = `${index * 0.3}s`;
-            });
-            
-            // Додаємо ефект при наведенні на кнопки
-            const buttons = document.querySelectorAll('.topic-link, .start-button');
-            buttons.forEach(button => {
-                button.addEventListener('mouseover', function() {
-                    this.style.transform = 'translateY(-3px)';
-                });
-                button.addEventListener('mouseout', function() {
-                    this.style.transform = 'translateY(0)';
-                });
+        // Додаткові анімації при завантаженні
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.topic-link, .start-button, .topic-card').forEach(el => {
+                el.addEventListener('mouseover', () => el.style.transform += ' translateY(-4px)');
+                el.addEventListener('mouseout', () => el.style.transform = el.style.transform.replace(/ ?translateY\(-4px\)/, ''));
             });
         });
     </script>
