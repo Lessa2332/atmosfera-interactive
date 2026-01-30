@@ -1,0 +1,173 @@
+/* styles.css */
+:root {
+    --primary: #0F172A;
+    --secondary: #1E293B;
+    --accent-cyan: #00FFFF;
+    --accent-orange: #FF9500;
+    --accent-lime: #39FF14;
+    --accent-purple: #C77DFF;
+    --text-light: #E2E8F0;
+    --glass-bg: rgba(30, 41, 59, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Nunito', sans-serif;
+}
+
+body {
+    background: var(--primary);
+    color: var(--text-light);
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 149, 0, 0.05) 0%, transparent 20%);
+}
+
+/* Кнопки */
+.btn-primary {
+    padding: 12px 28px;
+    background: linear-gradient(45deg, var(--accent-orange), #FFB800);
+    color: #000;
+    font-weight: 900;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 20px var(--accent-orange);
+    transition: all 0.3s;
+    font-size: 18px;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px var(--accent-orange);
+}
+
+.btn-secondary {
+    padding: 12px 28px;
+    background: linear-gradient(45deg, var(--accent-cyan), #0099FF);
+    color: #000;
+    font-weight: 900;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 0 20px var(--accent-cyan);
+    transition: all 0.3s;
+    font-size: 18px;
+}
+
+.btn-secondary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px var(--accent-cyan);
+}
+
+/* Карточки */
+.lesson-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border-radius: 32px;
+    padding: 30px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    max-width: 1200px;
+    margin: 20px auto;
+    position: relative;
+}
+
+/* Заголовки */
+h1 {
+    font-size: 42px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px var(--accent-orange);
+}
+
+.subtitle {
+    font-size: 22px;
+    text-align: center;
+    opacity: 0.9;
+    margin-bottom: 40px;
+}
+
+/* Навігація */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Прогрес-бар */
+.progress-container {
+    margin: 30px 0;
+}
+
+.progress-bar {
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-lime));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+/* Повідомлення */
+.message {
+    padding: 20px;
+    border-radius: 20px;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: bold;
+    animation: fadeIn 0.5s;
+}
+
+.message.success {
+    background: rgba(57, 255, 20, 0.2);
+    border: 2px solid var(--accent-lime);
+    box-shadow: 0 0 20px var(--accent-lime);
+}
+
+.message.info {
+    background: rgba(0, 255, 255, 0.2);
+    border: 2px solid var(--accent-cyan);
+    box-shadow: 0 0 20px var(--accent-cyan);
+}
+
+/* Анімації */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.pulse { animation: pulse 2s infinite; }
+.float { animation: float 3s ease-in-out infinite; }
