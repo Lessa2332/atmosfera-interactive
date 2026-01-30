@@ -73,35 +73,86 @@
             transition: all 0.3s;
         }
         .btn-primary:hover { transform: scale(1.1); box-shadow: 0 0 50px #00FFFF; }
-        /* Весь твій оригінальний стиль */
-        .header h1 { font-size: 48px; font-weight: 900; text-align: center; margin-bottom: 12px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
-        .header .subtitle { font-size: 24px; }
-        .content { display: flex; gap: 40px; margin: 40px 0; align-items: center; flex-wrap: wrap; }
-        .welcome-image { flex: 1; text-align: center; min-width: 300px; }
-        .child-avatar { font-size: 140px; color: #00FFFF; text-shadow: 0 0 30px #00FFFF; margin-bottom: 20px; }
-        .science-icons i { font-size: 60px; margin: 12px; animation: float 6s ease-in-out infinite; }
+        .header h1 { 
+            font-size: 48px; 
+            font-weight: 900; 
+            text-align: center; 
+            margin-bottom: 12px; 
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); 
+        }
+        .header .subtitle { 
+            font-size: 24px; 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .content { 
+            display: flex; 
+            gap: 40px; 
+            margin: 40px 0; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        .welcome-image { 
+            flex: 1; 
+            text-align: center; 
+            min-width: 300px; 
+        }
+        .child-avatar { 
+            font-size: 140px; 
+            color: #00FFFF; 
+            text-shadow: 0 0 30px #00FFFF; 
+            margin-bottom: 20px; 
+        }
+        .science-icons i { 
+            font-size: 60px; 
+            margin: 12px; 
+            animation: float 6s ease-in-out infinite; 
+        }
         .science-icons i:nth-child(1) { color: #FFB800; text-shadow: 0 0 30px #FFB800; animation-delay: 0s; }
         .science-icons i:nth-child(2) { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; animation-delay: 0.3s; }
         .science-icons i:nth-child(3) { color: #39FF14; text-shadow: 0 0 30px #39FF14; animation-delay: 0.6s; }
         .science-icons i:nth-child(4) { color: #FF9500; text-shadow: 0 0 30px #FF9500; animation-delay: 0.9s; }
-        .welcome-text { flex: 2; }
-        .welcome-text h2 { font-size: 36px; font-weight: 900; margin-bottom: 16px; }
-        .features { display: flex; gap: 20px; margin: 24px 0; flex-wrap: wrap; }
-        .feature { flex: 1; min-width: 180px; background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .feature i { font-size: 40px; margin-bottom: 10px; display: block; }
-        .feature:nth-child(1) i { color: #00FFFF; text-shadow: 0 0 15px #00FFFF; }
-        .feature:nth-child(2) i { color: #FF66CC; text-shadow: 0 0 15px #FF66CC; }
-        .feature:nth-child(3) i { color: #FFB800; text-shadow: 0 0 15px #FFB800; }
-        .welcome-text ul { list-style: none; margin: 20px 0; }
-        .welcome-text li { margin: 12px 0; padding-left: 30px; position: relative; }
-        .welcome-text li::before { content: "✦"; color: #00FFFF; position: absolute; left: 0; text-shadow: 0 0 10px #00FFFF; }
         .start-section { margin-top: 50px; }
-        .start-section h3 { font-size: 32px; text-align: center; margin-bottom: 12px; }
-        .all-topics { margin-top: 50px; text-align: center; }
-        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 24px; }
-        .topic-link { --accent: #00FFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 24px; text-decoration: none; color: #E2E8F0; border: 2px solid var(--accent); box-shadow: 0 0 15px var(--accent); transition: all 0.3s ease; }
-        .topic-link:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 40px var(--accent); }
-        .topic-link i { font-size: 56px; color: var(--accent); text-shadow: 0 0 25px var(--accent); margin-bottom: 12px; }
+        .start-section h3 { 
+            font-size: 32px; 
+            text-align: center; 
+            margin-bottom: 12px; 
+        }
+        .all-topics { 
+            margin-top: 30px; 
+            text-align: center; 
+        }
+        .topics-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 20px; 
+            margin-top: 24px; 
+        }
+        .topic-link { 
+            --accent: #00FFFF; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 24px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 24px; 
+            text-decoration: none; 
+            color: #E2E8F0; 
+            border: 2px solid var(--accent); 
+            box-shadow: 0 0 15px var(--accent); 
+            transition: all 0.3s ease; 
+        }
+        .topic-link:hover { 
+            transform: translateY(-10px) scale(1.05); 
+            box-shadow: 0 0 40px var(--accent); 
+        }
+        .topic-link i { 
+            font-size: 56px; 
+            color: var(--accent); 
+            text-shadow: 0 0 25px var(--accent); 
+            margin-bottom: 12px; 
+        }
         .accent-orange { --accent: #FF9500; }
         .accent-cyan { --accent: #00FFFF; }
         .accent-lime { --accent: #39FF14; }
@@ -109,9 +160,19 @@
         .accent-blue { --accent: #0099FF; }
         .accent-magenta { --accent: #FF66CC; }
         .accent-green { --accent: #32CD32; }
-        .footer { text-align: center; margin-top: 50px; opacity: 0.8; }
-        .footer .hint { margin-top: 12px; font-size: 18px; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .footer { 
+            text-align: center; 
+            margin-top: 50px; 
+            opacity: 0.8; 
+        }
+        .footer .hint { 
+            margin-top: 12px; 
+            font-size: 18px; 
+        }
+        @keyframes float { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-20px); } 
+        }
         /* Досягнення та лідерборд */
         .achievements, .leaderboard {
             margin-top: 60px;
@@ -130,7 +191,7 @@
         tr:hover { background: rgba(255,255,255,0.05); }
         .stars { font-size: 28px; text-shadow: 0 0 15px #FFB800; }
         
-        /* Новий прогрес-бар */
+        /* Прогрес-бар */
         .progress-section {
             margin: 30px 0;
             padding: 20px;
@@ -138,7 +199,6 @@
             border-radius: 20px;
             border: 2px solid #00FFFF;
         }
-        
         .progress-bar-container {
             height: 25px;
             background: rgba(255, 255, 255, 0.1);
@@ -146,7 +206,6 @@
             overflow: hidden;
             margin: 15px 0;
         }
-        
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #00FFFF, #39FF14);
@@ -155,25 +214,21 @@
             position: relative;
             width: 0%;
         }
-        
         .progress-info {
             display: flex;
             justify-content: space-between;
             font-weight: bold;
             margin-top: 10px;
         }
-        
         .loading {
             text-align: center;
             padding: 20px;
             color: #FFB800;
         }
-        
         .loading::after {
             content: '...';
             animation: dots 1.5s infinite;
         }
-        
         @keyframes dots {
             0%, 20% { content: '.'; }
             40% { content: '..'; }
@@ -219,33 +274,7 @@
                     </div>
                 </div>
 
-                <div class="content">
-                    <div class="welcome-image">
-                        <div class="child-avatar"><i class="fas fa-child"></i></div>
-                        <div class="science-icons">
-                            <i class="fas fa-sun"></i>
-                            <i class="fas fa-cloud"></i>
-                            <i class="fas fa-wind"></i>
-                            <i class="fas fa-temperature-high"></i>
-                        </div>
-                    </div>
-                    <div class="welcome-text">
-                        <h2>Привіт, майбутній вчений!</h2>
-                        <p>Сьогодні ми відправимося у захоплюючу подорож до світу <strong>АТМОСФЕРИ</strong> - повітряної оболонки нашої планети!</p>
-                        <div class="features">
-                            <div class="feature"><i class="fas fa-play-circle"></i><span>Інтерактивні уроки</span></div>
-                            <div class="feature"><i class="fas fa-gamepad"></i><span>Цікаві симуляції</span></div>
-                            <div class="feature"><i class="fas fa-lightbulb"></i><span>Прості пояснення</span></div>
-                        </div>
-                        <p>Ти дізнаєшся:</p>
-                        <ul>
-                            <li>Чому змінюється температура вдень</li>
-                            <li>Як утворюються хмари та вітер</li>
-                            <li>Що таке атмосферний тиск</li>
-                            <li>Як працює парниковий ефект</li>
-                        </ul>
-                    </div>
-                </div>
+                <!-- Видалено дублюючий блок "Привіт, майбутній вчений!" -->
 
                 <div class="start-section">
                     <h3>Готовий розпочати навчання?</h3>
@@ -311,9 +340,9 @@
     </div>
 
     <script>
-        // ВИКОРИСТОВУЄМО ВАШ НОВИЙ URL
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwQTDZFGpxje9jVN2FpUy-nmPJNf0CcCvSslOsQambXS7Qw-fT1WP0LimOcyrdd19ioFQ/exec';
-        
+        // ✅ ОНОВЛЕНИЙ URL БЕЗ ПРОБІЛІВ
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxWtK6u5r2TlE_xMNCoofxkBhjYZiUnLorEro1mZfHSWYQrPk277gIwFtGj9EkVrx0kBg/exec';
+
         let userData = JSON.parse(localStorage.getItem('atmosphereUser')) || {};
         let scores = userData.scores || { 
             temperature: 0, 
@@ -339,7 +368,6 @@
             userData.scores = scores;
             localStorage.setItem('atmosphereUser', JSON.stringify(userData));
             
-            // Додаємо невелику анімацію
             document.getElementById('login-screen').style.opacity = '0.7';
             setTimeout(() => {
                 showMainContent();
@@ -353,7 +381,6 @@
             document.getElementById('greeting-name').textContent = userData.name;
             document.getElementById('greeting-class').textContent = userData.class;
             
-            // Показуємо прогрес-бар тільки якщо є бали
             const hasProgress = Object.values(scores).some(score => score > 0);
             if (hasProgress) {
                 document.getElementById('progress-section').style.display = 'block';
@@ -375,7 +402,6 @@
             const totalThemes = 7;
             const completedThemes = Object.values(scores).filter(score => score > 0).length;
             const progressPercent = Math.round((completedThemes / totalThemes) * 100);
-            
             const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
             
             document.getElementById('global-progress').style.width = progressPercent + '%';
@@ -385,21 +411,16 @@
 
         async function updatePersonalScores() {
             try {
-                // Спочатку ховаємо таблицю і показуємо завантаження
                 document.getElementById('personal-table').style.display = 'none';
                 document.getElementById('personal-loading').style.display = 'block';
                 
-                // Отримуємо оновлені дані з сервера
                 const response = await fetch(`${SHEET_URL}?action=getUserData&name=${encodeURIComponent(userData.name)}&class=${encodeURIComponent(userData.class)}`);
                 
-                if (!response.ok) {
-                    throw new Error('Не вдалося отримати дані з сервера');
-                }
+                if (!response.ok) throw new Error('Не вдалося отримати дані');
                 
                 const result = await response.json();
                 
                 if (result.status === 'success' && result.data) {
-                    // Оновлюємо локальні бали з сервера
                     const serverData = result.data;
                     scores = {
                         temperature: parseInt(serverData[2]) || 0,
@@ -410,13 +431,10 @@
                         layers: parseInt(serverData[7]) || 0,
                         greenhouse: parseInt(serverData[8]) || 0
                     };
-                    
-                    // Оновлюємо userData
                     userData.scores = scores;
                     localStorage.setItem('atmosphereUser', JSON.stringify(userData));
                 }
                 
-                // Оновлюємо відображення
                 const tbody = document.getElementById('personal-scores');
                 tbody.innerHTML = '';
                 
@@ -431,12 +449,9 @@
                 ];
                 
                 let total = 0;
-                
                 themes.forEach(theme => {
                     const value = scores[theme.key] || 0;
                     total += value;
-                    
-                    // Визначаємо наліпки за бали
                     let stars = '';
                     if (value >= 40) stars = '⭐⭐⭐';
                     else if (value >= 25) stars = '⭐⭐☆';
@@ -463,19 +478,13 @@
                     </tr>
                 `;
                 
-                // Оновлюємо прогрес-бар
                 updateProgressBar();
-                
-                // Ховаємо завантаження і показуємо таблицю
                 document.getElementById('personal-loading').style.display = 'none';
                 document.getElementById('personal-table').style.display = 'table';
                 
             } catch (err) {
                 console.error('Помилка завантаження досягнень:', err);
-                document.getElementById('personal-loading').innerHTML = 
-                    '⚠️ Не вдалося завантажити дані. Спробуйте пізніше.';
-                
-                // Показуємо локальні дані як запасний варіант
+                document.getElementById('personal-loading').innerHTML = '⚠️ Не вдалося завантажити дані. Спробуйте пізніше.';
                 showLocalPersonalScores();
             }
         }
@@ -483,7 +492,6 @@
         function showLocalPersonalScores() {
             const tbody = document.getElementById('personal-scores');
             tbody.innerHTML = '';
-            
             const themes = [
                 { key: 'temperature', name: '🌡️ Температура' },
                 { key: 'clouds', name: '☁️ Хмари' },
@@ -493,19 +501,15 @@
                 { key: 'layers', name: '🛰️ Шари атмосфери' },
                 { key: 'greenhouse', name: '🌿 Парниковий ефект' }
             ];
-            
             let total = 0;
-            
             themes.forEach(theme => {
                 const value = scores[theme.key] || 0;
                 total += value;
-                
                 let stars = '';
                 if (value >= 40) stars = '⭐⭐⭐';
                 else if (value >= 25) stars = '⭐⭐☆';
                 else if (value >= 10) stars = '⭐☆☆';
                 else if (value > 0) stars = '☆';
-                
                 tbody.innerHTML += `
                     <tr>
                         <td style="text-align: left; padding-left: 20px;">
@@ -517,7 +521,6 @@
                     </tr>
                 `;
             });
-            
             tbody.innerHTML += `
                 <tr style="background: rgba(57, 255, 20, 0.1); font-weight:900;">
                     <td style="text-align: left; padding-left: 20px;">🎯 Всього</td>
@@ -525,36 +528,28 @@
                     <td></td>
                 </tr>
             `;
-            
             document.getElementById('personal-loading').style.display = 'none';
             document.getElementById('personal-table').style.display = 'table';
         }
 
         async function loadLeaderboard(forceRefresh = false) {
             try {
-                // Показуємо завантаження
                 document.getElementById('leaderboard-loading').style.display = 'block';
                 document.getElementById('leaderboard-container').style.display = 'none';
                 
-                // Додаємо параметр cache busting для оновлення
                 const url = forceRefresh ? 
                     `${SHEET_URL}?action=getLeaderboard&t=${Date.now()}` :
                     `${SHEET_URL}?action=getLeaderboard`;
                 
                 const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error('Не вдалося завантажити лідерборд');
-                }
+                if (!response.ok) throw new Error('Не вдалося завантажити лідерборд');
                 
                 const result = await response.json();
-                
                 if (result.status === 'success' && result.leaderboard) {
                     displayLeaderboard(result.leaderboard);
                 } else {
                     throw new Error('Невірний формат даних');
                 }
-                
             } catch (err) {
                 console.error('Помилка завантаження лідерборду:', err);
                 document.getElementById('leaderboard-loading').innerHTML = 
@@ -579,25 +574,13 @@
             } else {
                 data.forEach((row, index) => {
                     if (!row[0]) return;
-                    
                     const medals = ['🥇', '🥈', '🥉'];
                     const medal = index < 3 ? medals[index] : `#${index + 1}`;
-                    
-                    // Обчислюємо загальну суму балів
-                    const total = (parseInt(row[2]) || 0) + 
-                                  (parseInt(row[3]) || 0) + 
-                                  (parseInt(row[4]) || 0) + 
-                                  (parseInt(row[5]) || 0) + 
-                                  (parseInt(row[6]) || 0) + 
-                                  (parseInt(row[7]) || 0) + 
-                                  (parseInt(row[8]) || 0);
-                    
-                    // Підсвічуємо поточного користувача
+                    const total = (parseInt(row[2]) || 0) + (parseInt(row[3]) || 0) + (parseInt(row[4]) || 0) + 
+                                  (parseInt(row[5]) || 0) + (parseInt(row[6]) || 0) + (parseInt(row[7]) || 0) + (parseInt(row[8]) || 0);
                     const isCurrentUser = row[0] === userData.name && row[1] === userData.class;
-                    const rowClass = isCurrentUser ? 'current-user' : '';
-                    
                     tbody.innerHTML += `
-                        <tr class="${rowClass}" ${isCurrentUser ? 'style="background: rgba(0, 255, 255, 0.1); border-left: 4px solid #00FFFF;"' : ''}>
+                        <tr ${isCurrentUser ? 'style="background: rgba(0, 255, 255, 0.1); border-left: 4px solid #00FFFF;"' : ''}>
                             <td style="font-weight: bold; font-size: 20px;">${medal}</td>
                             <td>${isCurrentUser ? '👉 ' : ''}${row[0]}</td>
                             <td>${row[1]}</td>
@@ -611,23 +594,10 @@
                     `;
                 });
             }
-            
-            // Ховаємо завантаження і показуємо таблицю
             document.getElementById('leaderboard-loading').style.display = 'none';
             document.getElementById('leaderboard-container').style.display = 'block';
-            
-            // Додаємо анімацію для оновлення
-            if (document.querySelector('.current-user')) {
-                document.querySelector('.current-user').style.animation = 'pulse 2s';
-                setTimeout(() => {
-                    if (document.querySelector('.current-user')) {
-                        document.querySelector('.current-user').style.animation = '';
-                    }
-                }, 2000);
-            }
         }
 
-        // Допоміжні функції
         function getThemeIcon(themeKey) {
             const icons = {
                 temperature: 'temperature-high',
@@ -662,7 +632,6 @@
             return '#888888';
         }
 
-        // Ініціалізація при завантаженні
         if (userData.name) {
             document.getElementById('main-content').classList.add('active');
             showMainContent();
@@ -670,7 +639,7 @@
             document.getElementById('login-screen').classList.add('active');
         }
 
-        // Додаємо анімацію pulse для CSS
+        // Анімації
         const style = document.createElement('style');
         style.textContent = `
             @keyframes pulse {
@@ -678,7 +647,7 @@
                 50% { transform: scale(1.02); }
                 100% { transform: scale(1); }
             }
-            .current-user {
+            tr[style*="border-left"] {
                 animation: pulse 2s infinite;
             }
             @keyframes fadeIn {
@@ -691,24 +660,17 @@
         `;
         document.head.appendChild(style);
 
-        // Додаємо hover ефекти
+        // Hover ефекти
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.topic-link').forEach(el => {
-                el.addEventListener('mouseover', () => {
-                    el.style.transform = 'translateY(-10px) scale(1.05)';
-                    el.style.transition = 'all 0.3s ease';
-                });
-                el.addEventListener('mouseout', () => {
-                    el.style.transform = 'translateY(0) scale(1)';
-                });
+                el.addEventListener('mouseover', () => el.style.transform = 'translateY(-10px) scale(1.05)');
+                el.addEventListener('mouseout', () => el.style.transform = 'translateY(0) scale(1)');
             });
         });
 
-        // Автоматичне оновлення лідерборду кожні 30 секунд
+        // Автооновлення
         setInterval(() => {
-            if (userData.name) {
-                loadLeaderboard();
-            }
+            if (userData.name) loadLeaderboard();
         }, 30000);
     </script>
 </body>
