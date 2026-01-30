@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Привітання - Інтерактивне навчання</title>
+    <title>Інтерактивне навчання - Атмосфера</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             background: #0F172A;
             color: #E2E8F0;
@@ -19,12 +18,7 @@
             justify-content: center;
             padding: 20px;
         }
-
-        .container {
-            width: 100%;
-            max-width: 1000px;
-        }
-
+        .container { width: 100%; max-width: 1100px; }
         .welcome-card {
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(16px);
@@ -32,347 +26,317 @@
             padding: 40px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            position: relative;
         }
-
-        .header h1 {
-            font-size: 48px;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 12px;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        .header-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
-
-        .header .subtitle {
-            font-size: 24px;
-            text-align: center;
-            opacity: 0.9;
-        }
-
-        .content {
-            display: flex;
-            gap: 40px;
-            margin: 40px 0;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .welcome-image {
-            flex: 1;
-            text-align: center;
-            min-width: 300px;
-        }
-
-        .child-avatar {
-            font-size: 140px;
+        .header-nav button {
+            background: none;
+            border: none;
             color: #00FFFF;
-            text-shadow: 0 0 30px #00FFFF;
-            margin-bottom: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            text-shadow: 0 0 10px #00FFFF;
         }
-
-        .science-icons i {
-            font-size: 60px;
-            margin: 12px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .science-icons i:nth-child(1) { color: #FFB800; text-shadow: 0 0 30px #FFB800; animation-delay: 0s; }     /* sun */
-        .science-icons i:nth-child(2) { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; animation-delay: 0.3s; } /* cloud */
-        .science-icons i:nth-child(3) { color: #39FF14; text-shadow: 0 0 30px #39FF14; animation-delay: 0.6s; } /* wind */
-        .science-icons i:nth-child(4) { color: #FF9500; text-shadow: 0 0 30px #FF9500; animation-delay: 0.9s; } /* temperature */
-
-        .welcome-text {
-            flex: 2;
-        }
-
-        .welcome-text h2 {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 16px;
-        }
-
-        .features {
-            display: flex;
-            gap: 20px;
-            margin: 24px 0;
-            flex-wrap: wrap;
-        }
-
-        .feature {
-            flex: 1;
-            min-width: 180px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 20px;
+        /* Екран входу */
+        #login-screen, #main-content { display: none; }
+        #login-screen.active, #main-content.active { display: block; }
+        .login-form {
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
         }
-
-        .feature i {
-            font-size: 40px;
-            margin-bottom: 10px;
-            display: block;
+        .login-form input {
+            width: 100%;
+            padding: 18px;
+            margin: 16px 0;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 20px;
+            text-align: center;
         }
+        .btn-primary {
+            padding: 16px 40px;
+            background: linear-gradient(45deg, #00FFFF, #0099FF);
+            color: #000;
+            font-weight: 900;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 0 30px #00FFFF;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover { transform: scale(1.1); box-shadow: 0 0 50px #00FFFF; }
 
+        /* Весь твій оригінальний стиль */
+        .header h1 { font-size: 48px; font-weight: 900; text-align: center; margin-bottom: 12px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+        .header .subtitle { font-size: 24px; text-align: center; opacity: 0.9; }
+        .content { display: flex; gap: 40px; margin: 40px 0; align-items: center; flex-wrap: wrap; }
+        .welcome-image { flex: 1; text-align: center; min-width: 300px; }
+        .child-avatar { font-size: 140px; color: #00FFFF; text-shadow: 0 0 30px #00FFFF; margin-bottom: 20px; }
+        .science-icons i { font-size: 60px; margin: 12px; animation: float 6s ease-in-out infinite; }
+        .science-icons i:nth-child(1) { color: #FFB800; text-shadow: 0 0 30px #FFB800; animation-delay: 0s; }
+        .science-icons i:nth-child(2) { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; animation-delay: 0.3s; }
+        .science-icons i:nth-child(3) { color: #39FF14; text-shadow: 0 0 30px #39FF14; animation-delay: 0.6s; }
+        .science-icons i:nth-child(4) { color: #FF9500; text-shadow: 0 0 30px #FF9500; animation-delay: 0.9s; }
+        .welcome-text { flex: 2; }
+        .welcome-text h2 { font-size: 36px; font-weight: 900; margin-bottom: 16px; }
+        .features { display: flex; gap: 20px; margin: 24px 0; flex-wrap: wrap; }
+        .feature { flex: 1; min-width: 180px; background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .feature i { font-size: 40px; margin-bottom: 10px; display: block; }
         .feature:nth-child(1) i { color: #00FFFF; text-shadow: 0 0 15px #00FFFF; }
         .feature:nth-child(2) i { color: #FF66CC; text-shadow: 0 0 15px #FF66CC; }
         .feature:nth-child(3) i { color: #FFB800; text-shadow: 0 0 15px #FFB800; }
-
-        .welcome-text ul {
-            list-style: none;
-            margin: 20px 0;
-        }
-
-        .welcome-text li {
-            margin: 12px 0;
-            padding-left: 30px;
-            position: relative;
-        }
-
-        .welcome-text li::before {
-            content: "✦";
-            color: #00FFFF;
-            position: absolute;
-            left: 0;
-            text-shadow: 0 0 10px #00FFFF;
-        }
-
-        .start-section {
-            margin-top: 50px;
-        }
-
-        .start-section h3 {
-            font-size: 32px;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .topic-card {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 28px;
-            padding: 24px;
-            margin: 30px 0;
-            border: 2px solid #FF9500;
-            box-shadow: 0 0 25px rgba(255, 149, 0, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        .topic-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 0 45px rgba(255, 149, 0, 0.8);
-        }
-
-        .topic-icon {
-            font-size: 80px;
-            color: #FF9500;
-            text-shadow: 0 0 30px #FF9500;
-            margin-right: 24px;
-        }
-
-        .topic-info h4 {
-            font-size: 28px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .start-button {
-            margin-left: auto;
-            padding: 16px 32px;
-            background: linear-gradient(45deg, #FF9500, #FFB800);
-            color: #000;
-            font-weight: 900;
-            border-radius: 50px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 0 25px #FF9500;
-            transition: all 0.3s ease;
-        }
-
-        .start-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px #FF9500;
-        }
-
-        .all-topics {
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        .topics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-top: 24px;
-        }
-
-        .topic-link {
-            --accent: #00FFFF; /* default */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            text-decoration: none;
-            color: #E2E8F0;
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-            transition: all 0.3s ease;
-        }
-
-        .topic-link:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 0 40px var(--accent);
-        }
-
-        .topic-link i {
-            font-size: 56px;
-            color: var(--accent);
-            text-shadow: 0 0 25px var(--accent);
-            margin-bottom: 12px;
-        }
-
-        /* Акцентні кольори для тем */
+        .welcome-text ul { list-style: none; margin: 20px 0; }
+        .welcome-text li { margin: 12px 0; padding-left: 30px; position: relative; }
+        .welcome-text li::before { content: "✦"; color: #00FFFF; position: absolute; left: 0; text-shadow: 0 0 10px #00FFFF; }
+        .start-section { margin-top: 50px; }
+        .start-section h3 { font-size: 32px; text-align: center; margin-bottom: 12px; }
+        .topic-card { display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border-radius: 28px; padding: 24px; margin: 30px 0; border: 2px solid #FF9500; box-shadow: 0 0 25px rgba(255, 149, 0, 0.5); transition: all 0.3s ease; }
+        .topic-card:hover { transform: scale(1.03); box-shadow: 0 0 45px rgba(255, 149, 0, 0.8); }
+        .topic-icon { font-size: 80px; color: #FF9500; text-shadow: 0 0 30px #FF9500; margin-right: 24px; }
+        .topic-info h4 { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+        .start-button { margin-left: auto; padding: 16px 32px; background: linear-gradient(45deg, #FF9500, #FFB800); color: #000; font-weight: 900; border-radius: 50px; text-decoration: none; display: flex; align-items: center; gap: 12px; box-shadow: 0 0 25px #FF9500; transition: all 0.3s ease; }
+        .start-button:hover { transform: scale(1.1); box-shadow: 0 0 50px #FF9500; }
+        .all-topics { margin-top: 50px; text-align: center; }
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 24px; }
+        .topic-link { --accent: #00FFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 24px; text-decoration: none; color: #E2E8F0; border: 2px solid var(--accent); box-shadow: 0 0 15px var(--accent); transition: all 0.3s ease; }
+        .topic-link:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 40px var(--accent); }
+        .topic-link i { font-size: 56px; color: var(--accent); text-shadow: 0 0 25px var(--accent); margin-bottom: 12px; }
         .accent-orange { --accent: #FF9500; }
-        .accent-cyan   { --accent: #00FFFF; }
-        .accent-lime   { --accent: #39FF14; }
+        .accent-cyan { --accent: #00FFFF; }
+        .accent-lime { --accent: #39FF14; }
         .accent-purple { --accent: #C77DFF; }
-        .accent-blue   { --accent: #0099FF; }
-        .accent-magenta{ --accent: #FF66CC; }
-        .accent-green  { --accent: #32CD32; }
+        .accent-blue { --accent: #0099FF; }
+        .accent-magenta { --accent: #FF66CC; }
+        .accent-green { --accent: #32CD32; }
+        .footer { text-align: center; margin-top: 50px; opacity: 0.8; }
+        .footer .hint { margin-top: 12px; font-size: 18px; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            opacity: 0.8;
+        /* Досягнення та лідерборд */
+        .achievements, .leaderboard {
+            margin-top: 60px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 28px;
+            border: 2px solid #39FF14;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.4);
         }
-
-        .footer .hint {
-            margin-top: 12px;
-            font-size: 18px;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: rgba(255,255,255,0.1); padding: 16px; cursor: pointer; text-align: center; font-weight: 900; }
+        th:hover { background: rgba(57, 255, 20, 0.3); box-shadow: 0 0 20px #39FF14; }
+        td { padding: 14px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        tr:hover { background: rgba(255,255,255,0.05); }
+        .stars { font-size: 28px; text-shadow: 0 0 15px #FFB800; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="welcome-card">
-            <div class="header">
-                <h1><i class="fas fa-smile"></i> Вітаємо!</h1>
-                <p class="subtitle">Привіт, друже! Ласкаво просимо до світу дивовижної науки</p>
-            </div>
-
-            <div class="content">
-                <div class="welcome-image">
-                    <div class="child-avatar">
-                        <i class="fas fa-child"></i>
-                    </div>
-                    <div class="science-icons">
-                        <i class="fas fa-sun"></i>
-                        <i class="fas fa-cloud"></i>
-                        <i class="fas fa-wind"></i>
-                        <i class="fas fa-temperature-high"></i>
-                    </div>
-                </div>
-
-                <div class="welcome-text">
-                    <h2>Привіт, майбутній вчений!</h2>
-                    <p>Сьогодні ми відправимося у захоплюючу подорож до світу <strong>АТМОСФЕРИ</strong> - повітряної оболонки нашої планети!</p>
-
-                    <div class="features">
-                        <div class="feature">
-                            <i class="fas fa-play-circle"></i>
-                            <span>Інтерактивні уроки</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-gamepad"></i>
-                            <span>Цікаві симуляції</span>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-lightbulb"></i>
-                            <span>Прості пояснення</span>
-                        </div>
-                    </div>
-
-                    <p>Ти дізнаєшся:</p>
-                    <ul>
-                        <li>Чому змінюється температура вдень</li>
-                        <li>Як утворюються хмари та вітер</li>
-                        <li>Що таке атмосферний тиск</li>
-                        <li>Як працює парниковий ефект</li>
-                    </ul>
+            <!-- Екран входу -->
+            <div id="login-screen">
+                <h1 style="text-align:center; text-shadow: 0 0 30px #00FFFF;"><i class="fas fa-smile-beam"></i> Давай знайомитись!</h1>
+                <div class="login-form">
+                    <p style="font-size:24px; margin-bottom:30px;">Привіт, майбутній вчений! 🚀</p>
+                    <input type="text" id="user-name" placeholder="Твоє ім'я" required>
+                    <input type="text" id="user-class" placeholder="Твій клас (наприклад, 5-А)" required>
+                    <button class="btn-primary" onclick="startLearning()">Розпочати пригоду!</button>
                 </div>
             </div>
 
-            <div class="start-section">
-                <h3>Готовий розпочати навчання?</h3>
-                <p style="text-align:center; opacity:0.9;">Обери першу тему:</p>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-temperature-half"></i>
-                    </div>
-                    <div class="topic-info">
-                        <h4>Тема 1: Температура повітря</h4>
-                        <p>Чому вдень тепліше, ніж вночі? Досліди з інтерактивним термометром!</p>
-                    </div>
-                    <a href="atmosphere.html" class="start-button">
-                        Почати урок <i class="fas fa-arrow-right"></i>
-                    </a>
+            <!-- Основний контент -->
+            <div id="main-content">
+                <div class="header-nav">
+                    <button onclick="logout()">Вийти</button>
+                </div>
+                <div class="header">
+                    <h1><i class="fas fa-smile"></i> Привіт, <span id="greeting-name"></span>!</h1>
+                    <p class="subtitle">З <span id="greeting-class"></span> класу. Ласкаво просимо до світу дивовижної науки!</p>
                 </div>
 
-                <div class="all-topics">
-                    <p>Або переглянь всі теми:</p>
-                    <div class="topics-grid">
-                        <a href="atmosphere.html" class="topic-link accent-orange">
+                <!-- Твій оригінальний контент -->
+                <div class="content">
+                    <div class="welcome-image">
+                        <div class="child-avatar"><i class="fas fa-child"></i></div>
+                        <div class="science-icons">
                             <i class="fas fa-sun"></i>
-                            Температура
-                        </a>
-                        <a href="page2.html" class="topic-link accent-cyan">
                             <i class="fas fa-cloud"></i>
-                            Хмари
-                        </a>
-                        <a href="page3.html" class="topic-link accent-lime">
                             <i class="fas fa-wind"></i>
-                            Вітер
-                        </a>
-                        <a href="page4.html" class="topic-link accent-purple">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Тиск
-                        </a>
-                        <a href="page5.html" class="topic-link accent-blue">
-                            <i class="fas fa-umbrella"></i>
-                            Опади
-                        </a>
-                        <a href="page6.html" class="topic-link accent-magenta">
-                            <i class="fas fa-layer-group"></i>
-                            Шари атмосфери
-                        </a>
-                        <a href="page7.html" class="topic-link accent-green">
-                            <i class="fas fa-seedling"></i>
-                            Парниковий ефект
-                        </a>
+                            <i class="fas fa-temperature-high"></i>
+                        </div>
+                    </div>
+                    <div class="welcome-text">
+                        <h2>Привіт, майбутній вчений!</h2>
+                        <p>Сьогодні ми відправимося у захоплюючу подорож до світу <strong>АТМОСФЕРИ</strong> - повітряної оболонки нашої планети!</p>
+                        <div class="features">
+                            <div class="feature"><i class="fas fa-play-circle"></i><span>Інтерактивні уроки</span></div>
+                            <div class="feature"><i class="fas fa-gamepad"></i><span>Цікаві симуляції</span></div>
+                            <div class="feature"><i class="fas fa-lightbulb"></i><span>Прості пояснення</span></div>
+                        </div>
+                        <p>Ти дізнаєшся:</p>
+                        <ul>
+                            <li>Чому змінюється температура вдень</li>
+                            <li>Як утворюються хмари та вітер</li>
+                            <li>Що таке атмосферний тиск</li>
+                            <li>Як працює парниковий ефект</li>
+                        </ul>
                     </div>
                 </div>
-            </div>
 
-            <div class="footer">
-                <p>Створено для цікавого навчання дітей</p>
-                <p class="hint">👆 Натискай на кнопки, щоб перейти до уроків!</p>
+                <div class="start-section">
+                    <h3>Готовий розпочати навчання?</h3>
+                    <p style="text-align:center; opacity:0.9;">Обери першу тему:</p>
+                    <div class="topic-card">
+                        <div class="topic-icon"><i class="fas fa-temperature-half"></i></div>
+                        <div class="topic-info">
+                            <h4>Тема 1: Температура повітря</h4>
+                            <p>Чому вдень тепліше, ніж вночі? Досліди з інтерактивним термометром!</p>
+                        </div>
+                        <a href="atmosphere.html" class="start-button">Почати урок <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="all-topics">
+                        <p>Або переглянь всі теми:</p>
+                        <div class="topics-grid">
+                            <a href="atmosphere.html" class="topic-link accent-orange"><i class="fas fa-sun"></i> Температура</a>
+                            <a href="page2.html" class="topic-link accent-cyan"><i class="fas fa-cloud"></i> Хмари</a>
+                            <a href="page3.html" class="topic-link accent-lime"><i class="fas fa-wind"></i> Вітер</a>
+                            <a href="page4.html" class="topic-link accent-purple"><i class="fas fa-tachometer-alt"></i> Тиск</a>
+                            <a href="page5.html" class="topic-link accent-blue"><i class="fas fa-umbrella"></i> Опади</a>
+                            <a href="page6.html" class="topic-link accent-magenta"><i class="fas fa-layer-group"></i> Шари атмосфери</a>
+                            <a href="page7.html" class="topic-link accent-green"><i class="fas fa-seedling"></i> Парниковий ефект</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Особисті досягнення -->
+                <div class="achievements">
+                    <h2 style="text-align:center; margin-bottom:20px;">Мої досягнення 🌟</h2>
+                    <table>
+                        <thead><tr><th>Тема</th><th>Бали</th><th>Наліпки</th></tr></thead>
+                        <tbody id="personal-scores"></tbody>
+                    </table>
+                </div>
+
+                <!-- Лідерборд класу -->
+                <div class="leaderboard">
+                    <h2 style="text-align:center; margin-bottom:20px; text-shadow: 0 0 20px #39FF14;">Лідерборд класу 🏆</h2>
+                    <div style="text-align:center; margin-bottom:20px;">
+                        <button class="btn-primary" onclick="loadLeaderboard()">Оновити лідерборд</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Ім'я</th>
+                                    <th>Клас</th>
+                                    <th>Температура</th>
+                                    <th>Тиск</th>
+                                    <th>Вітер</th>
+                                    <th>Хмари</th>
+                                    <th>Опади</th>
+                                    <th>Проект</th>
+                                    <th style="color:#39FF14;">Всього 🔮</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Створено для цікавого навчання дітей</p>
+                    <p class="hint">👆 Натискай на кнопки, щоб перейти до уроків!</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Додаткові анімації при завантаженні
+        const SHEET_URL = 'ТВІЙ_URL_З_APPS_SCRIPT_ТУТ'; // ← обов'язково заміни!
+
+        let userData = JSON.parse(localStorage.getItem('atmosphereUser')) || {};
+        let scores = userData.scores || { temperature: 0, clouds: 0, wind: 0, pressure: 0, precipitation: 0, layers: 0, greenhouse: 0 };
+
+        function startLearning() {
+            const name = document.getElementById('user-name').value.trim();
+            const userClass = document.getElementById('user-class').value.trim();
+            if (!name || !userClass) return alert('Заповни ім’я та клас!');
+            userData.name = name;
+            userData.class = userClass;
+            userData.scores = scores;
+            localStorage.setItem('atmosphereUser', JSON.stringify(userData));
+            showMainContent();
+        }
+
+        function showMainContent() {
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('main-content').classList.add('active');
+            document.getElementById('greeting-name').textContent = userData.name;
+            document.getElementById('greeting-class').textContent = userData.class;
+            updatePersonalScores();
+            loadLeaderboard();
+        }
+
+        function logout() {
+            if (confirm('Вийти і змінити користувача?')) {
+                localStorage.removeItem('atmosphereUser');
+                location.reload();
+            }
+        }
+
+        function updatePersonalScores() {
+            const tbody = document.getElementById('personal-scores');
+            tbody.innerHTML = '';
+            const themes = { temperature: 'Температура', clouds: 'Хмари', wind: 'Вітер', pressure: 'Тиск', precipitation: 'Опади', layers: 'Шари атмосфери', greenhouse: 'Парниковий ефект' };
+            let total = 0;
+            for (const [key, value] of Object.entries(scores)) {
+                total += value;
+                const stars = value >= 100 ? '★★★' : value >= 70 ? '★★☆' : value >= 40 ? '★☆☆' : '';
+                tbody.innerHTML += `<tr><td>${themes[key]}</td><td>${value}</td><td class="stars">${stars}</td></tr>`;
+            }
+            tbody.innerHTML += `<tr style="font-weight:900;"><td>Всього</td><td>${total}</td><td></td></tr>`;
+        }
+
+        async function loadLeaderboard() {
+            if (!SHEET_URL.includes('script.google.com')) {
+                document.querySelector('#leaderboard-table tbody').innerHTML = '<tr><td colspan="9">Встав URL Google Apps Script!</td></tr>';
+                return;
+            }
+            try {
+                const response = await fetch(SHEET_URL);
+                const result = await response.json();
+                const rows = result.rows || [];
+                const dataRows = rows.slice(1);
+                dataRows.sort((a, b) => (b[8] || 0) - (a[8] || 0));
+                const tbody = document.querySelector('#leaderboard-table tbody');
+                tbody.innerHTML = '';
+                dataRows.forEach((row, i) => {
+                    if (!row[0]) return;
+                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+                    tbody.innerHTML += `<tr><td>${medal} ${row[0]}</td><td>${row[1]}</td><td>${row[2]||0}</td><td>${row[3]||0}</td><td>${row[4]||0}</td><td>${row[5]||0}</td><td>${row[6]||0}</td><td>${row[7]||0}</td><td style="color:#39FF14; font-weight:900;">${row[8]||0}</td></tr>`;
+                });
+            } catch (err) {
+                document.querySelector('#leaderboard-table tbody').innerHTML = '<tr><td colspan="9">Помилка завантаження</td></tr>';
+            }
+        }
+
+        if (userData.name) {
+            document.getElementById('main-content').classList.add('active');
+            showMainContent();
+        } else {
+            document.getElementById('login-screen').classList.add('active');
+        }
+
+        // Твоя оригінальна анімація
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.topic-link, .start-button, .topic-card').forEach(el => {
                 el.addEventListener('mouseover', () => el.style.transform += ' translateY(-4px)');
