@@ -46,7 +46,7 @@
         #login-screen.active, #main-content.active { display: block; }
         .login-form {
             text-align: center;
-            max-width: 500px236;
+            max-width: 500px;
             margin: 0 auto;
         }
         .login-form input {
@@ -129,6 +129,56 @@
         td { padding: 14px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         tr:hover { background: rgba(255,255,255,0.05); }
         .stars { font-size: 28px; text-shadow: 0 0 15px #FFB800; }
+        
+        /* Новий прогрес-бар */
+        .progress-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 2px solid #00FFFF;
+        }
+        
+        .progress-bar-container {
+            height: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00FFFF, #39FF14);
+            border-radius: 12px;
+            transition: width 1s ease;
+            position: relative;
+            width: 0%;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #FFB800;
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
     </style>
 </head>
 <body>
@@ -153,6 +203,20 @@
                 <div class="header">
                     <h1><i class="fas fa-smile"></i> Привіт, <span id="greeting-name"></span>!</h1>
                     <p class="subtitle">З <span id="greeting-class"></span> класу. Ласкаво просимо до світу дивовижної науки!</p>
+                </div>
+
+                <!-- Прогрес-бар -->
+                <div class="progress-section" style="display: none;" id="progress-section">
+                    <h3 style="text-align:center; margin-bottom:15px; color:#00FFFF;">
+                        <i class="fas fa-chart-line"></i> Твій прогрес
+                    </h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="global-progress"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progress-text">0% завершено</span>
+                        <span id="total-score">0 балів</span>
+                    </div>
                 </div>
 
                 <div class="content">
@@ -202,7 +266,8 @@
                 <!-- Особисті досягнення -->
                 <div class="achievements">
                     <h2 style="text-align:center; margin-bottom:20px;">Мої досягнення 🌟</h2>
-                    <table>
+                    <div id="personal-loading" class="loading">Завантаження досягнень</div>
+                    <table id="personal-table" style="display: none;">
                         <thead><tr><th>Тема</th><th>Бали</th><th>Наліпки</th></tr></thead>
                         <tbody id="personal-scores"></tbody>
                     </table>
@@ -212,24 +277,27 @@
                 <div class="leaderboard">
                     <h2 style="text-align:center; margin-bottom:20px; text-shadow: 0 0 20px #39FF14;">Лідерборд класу 🏆</h2>
                     <div style="text-align:center; margin-bottom:20px;">
-                        <button class="btn-primary" onclick="loadLeaderboard()">Оновити лідерборд</button>
+                        <button class="btn-primary" onclick="loadLeaderboard(true)">
+                            <i class="fas fa-sync-alt"></i> Оновити лідерборд
+                        </button>
                     </div>
-                    <div class="table-container">
+                    <div id="leaderboard-loading" class="loading">Завантаження таблиці лідерів</div>
+                    <div class="table-container" id="leaderboard-container" style="display: none;">
                         <table id="leaderboard-table">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Ім'я</th>
                                     <th>Клас</th>
                                     <th>Температура</th>
-                                    <th>Тиск</th>
-                                    <th>Вітер</th>
                                     <th>Хмари</th>
+                                    <th>Вітер</th>
+                                    <th>Тиск</th>
                                     <th>Опади</th>
-                                    <th>Проект</th>
                                     <th style="color:#39FF14;">Всього 🔮</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody id="leaderboard-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -243,20 +311,40 @@
     </div>
 
     <script>
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
-
+        // ВИКОРИСТОВУЄМО ВАШ НОВИЙ URL
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwQTDZFGpxje9jVN2FpUy-nmPJNf0CcCvSslOsQambXS7Qw-fT1WP0LimOcyrdd19ioFQ/exec';
+        
         let userData = JSON.parse(localStorage.getItem('atmosphereUser')) || {};
-        let scores = userData.scores || { temperature: 0, clouds: 0, wind: 0, pressure: 0, precipitation: 0, layers: 0, greenhouse: 0 };
+        let scores = userData.scores || { 
+            temperature: 0, 
+            clouds: 0, 
+            wind: 0, 
+            pressure: 0, 
+            precipitation: 0, 
+            layers: 0, 
+            greenhouse: 0 
+        };
 
         function startLearning() {
             const name = document.getElementById('user-name').value.trim();
             const userClass = document.getElementById('user-class').value.trim();
-            if (!name || !userClass) return alert('Заповни ім’я та клас!');
+            
+            if (!name || !userClass) {
+                alert('Будь ласка, заповни своє ім\'я та клас! ✏️');
+                return;
+            }
+            
             userData.name = name;
             userData.class = userClass;
             userData.scores = scores;
             localStorage.setItem('atmosphereUser', JSON.stringify(userData));
-            showMainContent();
+            
+            // Додаємо невелику анімацію
+            document.getElementById('login-screen').style.opacity = '0.7';
+            setTimeout(() => {
+                showMainContent();
+                document.getElementById('login-screen').style.opacity = '1';
+            }, 300);
         }
 
         function showMainContent() {
@@ -264,49 +352,317 @@
             document.getElementById('main-content').classList.add('active');
             document.getElementById('greeting-name').textContent = userData.name;
             document.getElementById('greeting-class').textContent = userData.class;
+            
+            // Показуємо прогрес-бар тільки якщо є бали
+            const hasProgress = Object.values(scores).some(score => score > 0);
+            if (hasProgress) {
+                document.getElementById('progress-section').style.display = 'block';
+                updateProgressBar();
+            }
+            
             updatePersonalScores();
             loadLeaderboard();
         }
 
         function logout() {
-            if (confirm('Вийти і змінити користувача?')) {
+            if (confirm('Вийти з аккаунта і змінити користувача? 👋')) {
                 localStorage.removeItem('atmosphereUser');
                 location.reload();
             }
         }
 
-        function updatePersonalScores() {
+        function updateProgressBar() {
+            const totalThemes = 7;
+            const completedThemes = Object.values(scores).filter(score => score > 0).length;
+            const progressPercent = Math.round((completedThemes / totalThemes) * 100);
+            
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            
+            document.getElementById('global-progress').style.width = progressPercent + '%';
+            document.getElementById('progress-text').textContent = `${progressPercent}% завершено (${completedThemes}/${totalThemes} тем)`;
+            document.getElementById('total-score').textContent = `${totalScore} балів`;
+        }
+
+        async function updatePersonalScores() {
+            try {
+                // Спочатку ховаємо таблицю і показуємо завантаження
+                document.getElementById('personal-table').style.display = 'none';
+                document.getElementById('personal-loading').style.display = 'block';
+                
+                // Отримуємо оновлені дані з сервера
+                const response = await fetch(`${SHEET_URL}?action=getUserData&name=${encodeURIComponent(userData.name)}&class=${encodeURIComponent(userData.class)}`);
+                
+                if (!response.ok) {
+                    throw new Error('Не вдалося отримати дані з сервера');
+                }
+                
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data) {
+                    // Оновлюємо локальні бали з сервера
+                    const serverData = result.data;
+                    scores = {
+                        temperature: parseInt(serverData[2]) || 0,
+                        clouds: parseInt(serverData[3]) || 0,
+                        wind: parseInt(serverData[4]) || 0,
+                        pressure: parseInt(serverData[5]) || 0,
+                        precipitation: parseInt(serverData[6]) || 0,
+                        layers: parseInt(serverData[7]) || 0,
+                        greenhouse: parseInt(serverData[8]) || 0
+                    };
+                    
+                    // Оновлюємо userData
+                    userData.scores = scores;
+                    localStorage.setItem('atmosphereUser', JSON.stringify(userData));
+                }
+                
+                // Оновлюємо відображення
+                const tbody = document.getElementById('personal-scores');
+                tbody.innerHTML = '';
+                
+                const themes = [
+                    { key: 'temperature', name: '🌡️ Температура' },
+                    { key: 'clouds', name: '☁️ Хмари' },
+                    { key: 'wind', name: '💨 Вітер' },
+                    { key: 'pressure', name: '📊 Тиск' },
+                    { key: 'precipitation', name: '🌧️ Опади' },
+                    { key: 'layers', name: '🛰️ Шари атмосфери' },
+                    { key: 'greenhouse', name: '🌿 Парниковий ефект' }
+                ];
+                
+                let total = 0;
+                
+                themes.forEach(theme => {
+                    const value = scores[theme.key] || 0;
+                    total += value;
+                    
+                    // Визначаємо наліпки за бали
+                    let stars = '';
+                    if (value >= 40) stars = '⭐⭐⭐';
+                    else if (value >= 25) stars = '⭐⭐☆';
+                    else if (value >= 10) stars = '⭐☆☆';
+                    else if (value > 0) stars = '☆';
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="text-align: left; padding-left: 20px;">
+                                <i class="fas fa-${getThemeIcon(theme.key)}" style="margin-right: 10px; color: ${getThemeColor(theme.key)}"></i>
+                                ${theme.name}
+                            </td>
+                            <td style="font-weight: bold; color: ${getScoreColor(value)}">${value}</td>
+                            <td class="stars">${stars}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML += `
+                    <tr style="background: rgba(57, 255, 20, 0.1); font-weight:900;">
+                        <td style="text-align: left; padding-left: 20px;">🎯 Всього</td>
+                        <td style="color: #39FF14;">${total}</td>
+                        <td></td>
+                    </tr>
+                `;
+                
+                // Оновлюємо прогрес-бар
+                updateProgressBar();
+                
+                // Ховаємо завантаження і показуємо таблицю
+                document.getElementById('personal-loading').style.display = 'none';
+                document.getElementById('personal-table').style.display = 'table';
+                
+            } catch (err) {
+                console.error('Помилка завантаження досягнень:', err);
+                document.getElementById('personal-loading').innerHTML = 
+                    '⚠️ Не вдалося завантажити дані. Спробуйте пізніше.';
+                
+                // Показуємо локальні дані як запасний варіант
+                showLocalPersonalScores();
+            }
+        }
+
+        function showLocalPersonalScores() {
             const tbody = document.getElementById('personal-scores');
             tbody.innerHTML = '';
-            const themes = { temperature: 'Температура', clouds: 'Хмари', wind: 'Вітер', pressure: 'Тиск', precipitation: 'Опади', layers: 'Шари атмосфери', greenhouse: 'Парниковий ефект' };
+            
+            const themes = [
+                { key: 'temperature', name: '🌡️ Температура' },
+                { key: 'clouds', name: '☁️ Хмари' },
+                { key: 'wind', name: '💨 Вітер' },
+                { key: 'pressure', name: '📊 Тиск' },
+                { key: 'precipitation', name: '🌧️ Опади' },
+                { key: 'layers', name: '🛰️ Шари атмосфери' },
+                { key: 'greenhouse', name: '🌿 Парниковий ефект' }
+            ];
+            
             let total = 0;
-            for (const [key, value] of Object.entries(scores)) {
+            
+            themes.forEach(theme => {
+                const value = scores[theme.key] || 0;
                 total += value;
-                const stars = value >= 100 ? '★★★' : value >= 70 ? '★★☆' : value >= 40 ? '★☆☆' : '';
-                tbody.innerHTML += `<tr><td>${themes[key]}</td><td>${value}</td><td class="stars">${stars}</td></tr>`;
-            }
-            tbody.innerHTML += `<tr style="font-weight:900;"><td>Всього</td><td>${total}</td><td></td></tr>`;
+                
+                let stars = '';
+                if (value >= 40) stars = '⭐⭐⭐';
+                else if (value >= 25) stars = '⭐⭐☆';
+                else if (value >= 10) stars = '⭐☆☆';
+                else if (value > 0) stars = '☆';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align: left; padding-left: 20px;">
+                            <i class="fas fa-${getThemeIcon(theme.key)}" style="margin-right: 10px; color: ${getThemeColor(theme.key)}"></i>
+                            ${theme.name}
+                        </td>
+                        <td style="font-weight: bold; color: ${getScoreColor(value)}">${value}</td>
+                        <td class="stars">${stars}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML += `
+                <tr style="background: rgba(57, 255, 20, 0.1); font-weight:900;">
+                    <td style="text-align: left; padding-left: 20px;">🎯 Всього</td>
+                    <td style="color: #39FF14;">${total}</td>
+                    <td></td>
+                </tr>
+            `;
+            
+            document.getElementById('personal-loading').style.display = 'none';
+            document.getElementById('personal-table').style.display = 'table';
         }
 
-        async function loadLeaderboard() {
+        async function loadLeaderboard(forceRefresh = false) {
             try {
-                const response = await fetch(SHEET_URL);
+                // Показуємо завантаження
+                document.getElementById('leaderboard-loading').style.display = 'block';
+                document.getElementById('leaderboard-container').style.display = 'none';
+                
+                // Додаємо параметр cache busting для оновлення
+                const url = forceRefresh ? 
+                    `${SHEET_URL}?action=getLeaderboard&t=${Date.now()}` :
+                    `${SHEET_URL}?action=getLeaderboard`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Не вдалося завантажити лідерборд');
+                }
+                
                 const result = await response.json();
-                const rows = result.rows || [];
-                const dataRows = rows.slice(1);
-                dataRows.sort((a, b) => (b[8] || 0) - (a[8] || 0));
-                const tbody = document.querySelector('#leaderboard-table tbody');
-                tbody.innerHTML = '';
-                dataRows.forEach((row, i) => {
-                    if (!row[0]) return;
-                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-                    tbody.innerHTML += `<tr><td>${medal} ${row[0]}</td><td>${row[1]}</td><td>${row[2]||0}</td><td>${row[3]||0}</td><td>${row[4]||0}</td><td>${row[5]||0}</td><td>${row[6]||0}</td><td>${row[7]||0}</td><td style="color:#39FF14; font-weight:900;">${row[8]||0}</td></tr>`;
-                });
+                
+                if (result.status === 'success' && result.leaderboard) {
+                    displayLeaderboard(result.leaderboard);
+                } else {
+                    throw new Error('Невірний формат даних');
+                }
+                
             } catch (err) {
-                document.querySelector('#leaderboard-table tbody').innerHTML = '<tr><td colspan="9">Помилка завантаження (перевір URL або інтернет)</td></tr>';
+                console.error('Помилка завантаження лідерборду:', err);
+                document.getElementById('leaderboard-loading').innerHTML = 
+                    '⚠️ Не вдалося завантажити лідерборд. Перевірте підключення до інтернету.';
             }
         }
 
+        function displayLeaderboard(data) {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 30px;">
+                            <i class="fas fa-trophy" style="font-size: 40px; color: #FFB800; margin-bottom: 15px; display: block;"></i>
+                            <p style="font-size: 18px;">Лідерборд порожній!</p>
+                            <p style="opacity: 0.8;">Стань першим, хто пройде уроки! 🚀</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                data.forEach((row, index) => {
+                    if (!row[0]) return;
+                    
+                    const medals = ['🥇', '🥈', '🥉'];
+                    const medal = index < 3 ? medals[index] : `#${index + 1}`;
+                    
+                    // Обчислюємо загальну суму балів
+                    const total = (parseInt(row[2]) || 0) + 
+                                  (parseInt(row[3]) || 0) + 
+                                  (parseInt(row[4]) || 0) + 
+                                  (parseInt(row[5]) || 0) + 
+                                  (parseInt(row[6]) || 0) + 
+                                  (parseInt(row[7]) || 0) + 
+                                  (parseInt(row[8]) || 0);
+                    
+                    // Підсвічуємо поточного користувача
+                    const isCurrentUser = row[0] === userData.name && row[1] === userData.class;
+                    const rowClass = isCurrentUser ? 'current-user' : '';
+                    
+                    tbody.innerHTML += `
+                        <tr class="${rowClass}" ${isCurrentUser ? 'style="background: rgba(0, 255, 255, 0.1); border-left: 4px solid #00FFFF;"' : ''}>
+                            <td style="font-weight: bold; font-size: 20px;">${medal}</td>
+                            <td>${isCurrentUser ? '👉 ' : ''}${row[0]}</td>
+                            <td>${row[1]}</td>
+                            <td>${row[2] || 0}</td>
+                            <td>${row[3] || 0}</td>
+                            <td>${row[4] || 0}</td>
+                            <td>${row[5] || 0}</td>
+                            <td>${row[6] || 0}</td>
+                            <td style="color: #39FF14; font-weight: 900; font-size: 18px;">${total}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            // Ховаємо завантаження і показуємо таблицю
+            document.getElementById('leaderboard-loading').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'block';
+            
+            // Додаємо анімацію для оновлення
+            if (document.querySelector('.current-user')) {
+                document.querySelector('.current-user').style.animation = 'pulse 2s';
+                setTimeout(() => {
+                    if (document.querySelector('.current-user')) {
+                        document.querySelector('.current-user').style.animation = '';
+                    }
+                }, 2000);
+            }
+        }
+
+        // Допоміжні функції
+        function getThemeIcon(themeKey) {
+            const icons = {
+                temperature: 'temperature-high',
+                clouds: 'cloud',
+                wind: 'wind',
+                pressure: 'tachometer-alt',
+                precipitation: 'umbrella',
+                layers: 'layer-group',
+                greenhouse: 'seedling'
+            };
+            return icons[themeKey] || 'question-circle';
+        }
+
+        function getThemeColor(themeKey) {
+            const colors = {
+                temperature: '#FF9500',
+                clouds: '#00FFFF',
+                wind: '#39FF14',
+                pressure: '#C77DFF',
+                precipitation: '#0099FF',
+                layers: '#FF66CC',
+                greenhouse: '#32CD32'
+            };
+            return colors[themeKey] || '#FFFFFF';
+        }
+
+        function getScoreColor(score) {
+            if (score >= 40) return '#39FF14';
+            if (score >= 25) return '#FFB800';
+            if (score >= 10) return '#00FFFF';
+            if (score > 0) return '#C77DFF';
+            return '#888888';
+        }
+
+        // Ініціалізація при завантаженні
         if (userData.name) {
             document.getElementById('main-content').classList.add('active');
             showMainContent();
@@ -314,12 +670,46 @@
             document.getElementById('login-screen').classList.add('active');
         }
 
+        // Додаємо анімацію pulse для CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.02); }
+                100% { transform: scale(1); }
+            }
+            .current-user {
+                animation: pulse 2s infinite;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            #leaderboard-container table {
+                animation: fadeIn 0.5s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Додаємо hover ефекти
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.topic-link, .start-button, .topic-card').forEach(el => {
-                el.addEventListener('mouseover', () => el.style.transform += ' translateY(-4px)');
-                el.addEventListener('mouseout', () => el.style.transform = el.style.transform.replace(/ ?translateY\(-4px\)/, ''));
+            document.querySelectorAll('.topic-link').forEach(el => {
+                el.addEventListener('mouseover', () => {
+                    el.style.transform = 'translateY(-10px) scale(1.05)';
+                    el.style.transition = 'all 0.3s ease';
+                });
+                el.addEventListener('mouseout', () => {
+                    el.style.transform = 'translateY(0) scale(1)';
+                });
             });
         });
+
+        // Автоматичне оновлення лідерборду кожні 30 секунд
+        setInterval(() => {
+            if (userData.name) {
+                loadLeaderboard();
+            }
+        }, 30000);
     </script>
 </body>
 </html>
