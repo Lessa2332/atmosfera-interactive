@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Атмосферний тиск </title>
+    <title>📊 Атмосферний тиск — Дослідження для 6 класу</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -114,8 +114,8 @@
             position: absolute;
             right: 20%;
             bottom: 50px;
-            width: 10px;
-            height: 200px;
+            width: 12px;
+            height: 220px;
             background: rgba(255,255,255,0.2);
             border: 2px solid var(--accent-cyan);
         }
@@ -123,8 +123,8 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            background: #EF5350;
-            height: 760px; /* 760 мм рт. ст. */
+            background: linear-gradient(to top, #EF5350, #2196F3);
+            height: 76%;
             transition: height 1s ease;
         }
         .mountain {
@@ -132,8 +132,8 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             background: linear-gradient(to top, #5D4037, #8BC34A);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
@@ -144,6 +144,7 @@
             background: rgba(0,0,0,0.6);
             padding: 5px 10px;
             border-radius: 5px;
+            font-size: 16px;
         }
         .pressure-base { bottom: 20px; left: 40%; }
         .pressure-top { top: 20px; left: 50%; }
@@ -197,13 +198,18 @@
             <h2 style="color: var(--accent-orange);">
                 <i class="fas fa-film"></i> Завдання 1: Спостерігай за анімацією
             </h2>
-            <p>Переглянь, що відбувається з кулькою, ртуттю та горою:</p>
+            <p>Переглянь, що відбувається:</p>
+            <ul style="margin: 15px 0; padding-left: 25px;">
+                <li>Кулька з повітрям vs без повітря</li>
+                <li>Дослід Торрічеллі (ртутна трубка)</li>
+                <li>Зміна тиску на горі (біля підніжжя і на вершині)</li>
+            </ul>
             
             <div class="animation-scene">
                 <div class="ball with-air" title="Кулька з повітрям"></div>
                 <div class="ball no-air" title="Кулька без повітря"></div>
                 <div class="mercury-tube">
-                    <div class="mercury" id="mercuryLevel"></div>
+                    <div class="mercury"></div>
                 </div>
                 <div class="mountain"></div>
                 <div class="pressure-label pressure-base">1013 гПа</div>
@@ -231,10 +237,10 @@
             </div>
             
             <div class="input-group">
-                <label>Атмосферний тиск (число):</label>
-                <input type="text" id="pressureValue" placeholder="Наприклад: 1015">
-                <label>Колір на карті:</label>
-                <input type="text" id="pressureColor" placeholder="Наприклад: синій">
+                <label>Атмосферний тиск (число, наприклад: 1015):</label>
+                <input type="text" id="pressureValue" placeholder="Введи число з карти">
+                <label>Колір на карті (наприклад: синій, червоний):</label>
+                <input type="text" id="pressureColor" placeholder="Опиши колір">
             </div>
             
             <button class="btn-primary" onclick="submitMapTask()">
@@ -249,11 +255,11 @@
                 <i class="fas fa-pencil-alt"></i> Завдання 3: Закінчи речення
             </h2>
             <p>Атмосферний тиск — це 
-                <input type="text" id="sentence1" placeholder="..." style="width: 300px; display: inline-block;">
+                <input type="text" id="sentence1" placeholder="..." style="width: 300px; display: inline-block; margin: 0 5px;">
                 , і з підняттям угору він 
-                <input type="text" id="sentence2" placeholder="..." style="width: 150px; display: inline-block;">.
+                <input type="text" id="sentence2" placeholder="..." style="width: 150px; display: inline-block; margin: 0 5px;">.
             </p>
-            <button class="btn-primary" onclick="checkSentence()">
+            <button class="btn-primary" onclick="checkSentence()" style="margin-top:15px;">
                 <i class="fas fa-check-double"></i> Перевірити
             </button>
             <p id="task3Status" style="margin-top:10px; color:var(--accent-lime);"></p>
@@ -264,12 +270,13 @@
             <h2>🏆 Вітаємо!</h2>
             <p>Ти отримав <span id="earnedPoints">12</span> балів!</p>
             <p>Твій результат збережено.</p>
-            <a href="page5.html" class="btn-primary" style="margin-top:15px; display:inline-block;">Далі →</a>
+            <a href="page3.html" class="btn-primary" style="margin-top:15px; display:inline-block;">Далі → Вітер</a>
         </div>
     </div>
 </div>
 
 <script>
+// === ВАЖЛИВО: тема = 'Тиск' (відповідає колонці D у таблиці) ===
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
 let userData = {};
 let taskPoints = { task1: 0, task2: 0, task3: 0 };
@@ -316,7 +323,7 @@ async function awardPoints(taskName, points) {
             body: JSON.stringify({
                 name: userData.name,
                 class: userData.class,
-                theme: 'Тиск',
+                theme: 'Тиск', // ← КЛЮЧОВЕ: має збігатися з назвою колонки в таблиці!
                 points: points
             })
         });
@@ -349,11 +356,9 @@ function checkSentence() {
     const part1 = document.getElementById('sentence1').value.trim().toLowerCase();
     const part2 = document.getElementById('sentence2').value.trim().toLowerCase();
     
-    const correct1 = ['тиск повітря на поверхню землі', 'тиск повітряної оболонки', 'тиск, який чинить повітря'];
-    const correct2 = ['зменшується', 'падає', 'стає меншим'];
-    
-    const isCorrect1 = correct1.some(c => part1.includes(c.split(' ')[0]) || c.includes(part1.split(' ')[0]));
-    const isCorrect2 = correct2.includes(part2);
+    // Приймаємо різні формулювання
+    const isCorrect1 = part1.includes('тиск') && (part1.includes('повітря') || part1.includes('атмосфери'));
+    const isCorrect2 = ['зменшується', 'падає', 'стає меншим', 'нижчий'].some(word => part2.includes(word));
     
     if (isCorrect1 && isCorrect2) {
         if (taskPoints.task3 === 0) {
@@ -361,7 +366,7 @@ function checkSentence() {
             document.getElementById('task3Status').textContent = '✅ Правильно! (+4 бали)';
         }
     } else {
-        alert('Спробуй ще раз! Підказка:\n1) "тиск повітря..."\n2) "зменшується"');
+        alert('Спробуй ще раз!\nПідказка:\n• Почни з "тиск повітря..."\n• Друга частина: "зменшується"');
     }
 }
 
@@ -372,4 +377,3 @@ function showReward(points) {
 </script>
 </body>
 </html>
-
