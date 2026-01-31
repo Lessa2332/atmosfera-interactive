@@ -3,130 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тема 2: Хмари</title>
+    <title>📊 Атмосферний тиск — Дослідження для 6 класу</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <style>
-        .lesson-card { position: relative; padding: 40px; }
-        .nav-buttons { position: absolute; top: 20px; left: 20px; gap: 20px; z-index: 10; }
-        .section { margin: 50px 0; background: rgba(255,255,255,0.05); padding: 30px; border-radius: 28px; border: 2px solid #00FFFF; box-shadow: 0 0 30px rgba(0,255,255,0.4); }
-        .cloud-simulation { height: clamp(300px, 60vh, 500px); background: linear-gradient(to bottom, #0F172A 0%, #1E293B 100%); border: 2px solid #00FFFF; box-shadow: 0 0 40px #00FFFF; }
-        .cloud { background: rgba(255,255,255,0.2); box-shadow: 0 0 30px #00FFFF; backdrop-filter: blur(4px); }
-        .quiz-question { text-align: center; margin: 30px 0; }
-        .quiz-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .quiz-option { padding: 20px; background: rgba(255,255,255,0.1); border-radius: 24px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
-        .quiz-option:hover { transform: scale(1.05); box-shadow: 0 0 30px #00FFFF; }
-        .quiz-option.correct { border: 2px solid #39FF14; box-shadow: 0 0 40px #39FF14; }
-        .quiz-option.wrong { border: 2px solid #F44336; box-shadow: 0 0 40px #F44336; }
-        .rain-animation { height: clamp(300px, 50vh, 400px); position: relative; background: linear-gradient(to bottom, #0F172A, #1E293B); overflow: hidden; border-radius: 28px; border: 2px solid #00FFFF; }
-        .rain-drop { position: absolute; width: 2px; height: 20px; background: #00FFFF; opacity: 0.8; animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
-        .complete-btn { display: none; margin: 40px auto; padding: 20px 50px; font-size: 24px; background: linear-gradient(45deg, #39FF14, #32CD32); box-shadow: 0 0 40px #39FF14; }
+        :root {
+            --primary: #0F172A;
+            --secondary: #1E293B;
+            --accent-cyan: #00FFFF;
+            --accent-orange: #FF9500;
+            --accent-lime: #39FF14;
+            --accent-purple: #C77DFF;
+            --text-light: #E2E8F0;
+            --glass-bg: rgba(30, 41, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; }
+        body {
+            background: var(--primary);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .lesson-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            margin-bottom: 25px;
+        }
+        h1 {
+            font-size: 42px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--accent-orange);
+        }
+        .subtitle { font-size: 22px; text-align: center; opacity: 0.9; margin-bottom: 40px; }
+        .btn-primary {
+            padding: 12px 28px;
+            background: linear-gradient(45deg, var(--accent-orange), #FFB800);
+            color: #000;
+            font-weight: 900;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px var(--accent-orange);
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--accent-orange);
+        }
+        .btn-secondary {
+            padding: 12px 28px;
+            background: linear-gradient(45deg, var(--accent-cyan), #0099FF);
+            color: #000;
+            font-weight: 900;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px var(--accent-cyan);
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+        .btn-secondary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px var(--accent-cyan);
+        }
+        .map-container {
+            width: 100%;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--accent-cyan);
+            margin: 20px 0;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        .animation-scene {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            border: 2px solid var(--accent-orange);
+        }
+        .ball {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            bottom: 50px;
+            transition: all 0.5s ease;
+        }
+        .ball.with-air { background: radial-gradient(circle, #FFD700, #FF8C00); left: 20%; }
+        .ball.no-air { background: #888; left: 70%; transform: scale(0.7); }
+        .mercury-tube {
+            position: absolute;
+            right: 20%;
+            bottom: 50px;
+            width: 10px;
+            height: 200px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid var(--accent-cyan);
+        }
+        .mercury {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #EF5350;
+            height: 760px; /* 760 мм рт. ст. */
+            transition: height 1s ease;
+        }
+        .mountain {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(to top, #5D4037, #8BC34A);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .pressure-label {
+            position: absolute;
+            font-weight: bold;
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .pressure-base { bottom: 20px; left: 40%; }
+        .pressure-top { top: 20px; left: 50%; }
+        .input-group {
+            margin: 20px 0;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--accent-cyan);
+            color: white;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .reward-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, gold, orange);
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+            display: none;
+            text-align: center;
+            max-width: 400px;
+            color: black;
+        }
     </style>
 </head>
 <body>
+<div class="container">
     <div class="lesson-card">
-        <div class="nav-buttons">
-            <a href="index.html" class="btn-primary">🏠 Головна</a>
-            <button class="btn-primary" onclick="logout()">Вийти</button>
-        </div>
-
-        <h1 style="text-align:center; text-shadow:0 0 30px #00FFFF;"><i class="fas fa-cloud"></i> Тема 2: Як утворюються хмари</h1>
-
-        <!-- 1. Симулятор -->
-        <div class="section">
-            <h2 style="text-align:center; color:#00FFFF;">1. Симулятор утворення хмар</h2>
-            <div class="cloud-simulation" id="cloudSimulation"><div class="stars" id="stars"></div></div>
-            <div class="controls-panel">
-                <div class="slider-container">
-                    <div class="slider-label"><span>Температура</span><span id="tempValue">20°C</span></div>
-                    <input type="range" id="temperature" min="-10" max="40" value="20">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-label"><span>Вологість</span><span id="humidityValue">50%</span></div>
-                    <input type="range" id="humidity" min="0" max="100" value="50">
-                </div>
-                <button id="formClouds" class="btn-primary">Створити хмари</button>
-                <button id="completeSim" class="btn-primary complete-btn">Завершити симулятор (+20 балів)</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <a href="index.html" class="btn-secondary">
+                <i class="fas fa-home"></i> Головна
+            </a>
+            <div style="font-size: 18px; font-weight: bold;">
+                <i class="fas fa-gem"></i> <span id="totalPoints">0</span> балів
             </div>
         </div>
 
-        <!-- 2. Вікторина -->
-        <div class="section">
-            <h2 style="text-align:center; color:#00FFFF;">2. Вікторина: Вгадай тип хмари</h2>
-            <!-- Приклад питання (додай більше) -->
-            <div class="quiz-question">
-                <img src="URL_ЗОБРАЖЕННЯ_КУЧЕВИХ_ХМАР" alt="Хмари" style="max-width:100%; border-radius:20px; box-shadow:0 0 30px #00FFFF;">
-                <p>Який це тип хмар?</p>
-                <div class="quiz-options">
-                    <div class="quiz-option" data-answer="correct">Кучеві</div>
-                    <div class="quiz-option">Шаруваті</div>
-                    <div class="quiz-option">Перисті</div>
+        <h1>📊 Атмосферний тиск</h1>
+        <p class="subtitle">Чому повітря тисне? Як це вимірюють? Досліджуй!</p>
+
+        <!-- Завдання 1: Анімація -->
+        <div class="lesson-card">
+            <h2 style="color: var(--accent-orange);">
+                <i class="fas fa-film"></i> Завдання 1: Спостерігай за анімацією
+            </h2>
+            <p>Переглянь, що відбувається з кулькою, ртуттю та горою:</p>
+            
+            <div class="animation-scene">
+                <div class="ball with-air" title="Кулька з повітрям"></div>
+                <div class="ball no-air" title="Кулька без повітря"></div>
+                <div class="mercury-tube">
+                    <div class="mercury" id="mercuryLevel"></div>
                 </div>
+                <div class="mountain"></div>
+                <div class="pressure-label pressure-base">1013 гПа</div>
+                <div class="pressure-label pressure-top">700 гПа</div>
             </div>
-            <button id="completeQuiz" class="btn-primary complete-btn">Завершити вікторину (+20 балів)</button>
+            
+            <p style="margin-top: 15px; color: var(--accent-lime);">
+                💡 Повітря має масу! Чим більше повітря над нами — тим більший тиск.
+            </p>
+            <p id="task1Status" style="margin-top:10px; color:var(--accent-lime);"></p>
         </div>
 
-        <!-- 3. Анімація дощу + питання -->
-        <div class="section">
-            <h2 style="text-align:center; color:#00FFFF;">3. Як утворюється дощ?</h2>
-            <div class="rain-animation" id="rainAnimation"></div>
-            <p style="text-align:center; margin:20px 0;">Обери правильну відповідь:</p>
-            <div class="quiz-options">
-                <div class="quiz-option" data-answer="correct">Краплі води в хмарі стають важкими і падають</div>
-                <div class="quiz-option">Хмари тануть</div>
-                <div class="quiz-option">Вітер видуває воду</div>
+        <!-- Завдання 2: Карта -->
+        <div class="lesson-card">
+            <h2 style="color: var(--accent-cyan);">
+                <i class="fas fa-map-marked-alt"></i> Завдання 2: Робота з картою
+            </h2>
+            <p>1️⃣ Відкрий карту<br>
+               2️⃣ Увімкни шар <strong>Pressure (Тиск)</strong><br>
+               3️⃣ Натисни 🔍 і введи місто: <strong>Чорноморськ</strong> або <strong>Іллічівськ</strong><br>
+               4️⃣ Запиши тиск та колір</p>
+            
+            <div class="map-container">
+                <iframe src="https://www.ventusky.com/?layer=pressure&metric=pressure"></iframe>
             </div>
-            <button id="completeRain" class="btn-primary complete-btn">Завершити анімацію (+20 балів)</button>
+            
+            <div class="input-group">
+                <label>Атмосферний тиск (число):</label>
+                <input type="text" id="pressureValue" placeholder="Наприклад: 1015">
+                <label>Колір на карті:</label>
+                <input type="text" id="pressureColor" placeholder="Наприклад: синій">
+            </div>
+            
+            <button class="btn-primary" onclick="submitMapTask()">
+                <i class="fas fa-check"></i> Надіслати результат
+            </button>
+            <p id="task2Status" style="margin-top:10px; color:var(--accent-lime);"></p>
         </div>
 
-        <!-- Кнопка завершення уроку -->
-        <div style="text-align:center;">
-            <button id="completeLesson" class="btn-primary" style="padding:20px 50px; font-size:24px;">Завершити урок (+60 балів)! 🌟</button>
+        <!-- Завдання 3: Закінчи речення -->
+        <div class="lesson-card">
+            <h2 style="color: var(--accent-purple);">
+                <i class="fas fa-pencil-alt"></i> Завдання 3: Закінчи речення
+            </h2>
+            <p>Атмосферний тиск — це 
+                <input type="text" id="sentence1" placeholder="..." style="width: 300px; display: inline-block;">
+                , і з підняттям угору він 
+                <input type="text" id="sentence2" placeholder="..." style="width: 150px; display: inline-block;">.
+            </p>
+            <button class="btn-primary" onclick="checkSentence()">
+                <i class="fas fa-check-double"></i> Перевірити
+            </button>
+            <p id="task3Status" style="margin-top:10px; color:var(--accent-lime);"></p>
+        </div>
+
+        <!-- Нагорода -->
+        <div class="reward-badge" id="rewardBadge">
+            <h2>🏆 Вітаємо!</h2>
+            <p>Ти отримав <span id="earnedPoints">12</span> балів!</p>
+            <p>Твій результат збережено.</p>
+            <a href="page5.html" class="btn-primary" style="margin-top:15px; display:inline-block;">Далі →</a>
         </div>
     </div>
+</div>
 
-    <script>
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
+let userData = {};
+let taskPoints = { task1: 0, task2: 0, task3: 0 };
 
-        let completed = { sim: false, quiz: false, rain: false };
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserData();
+    // Автоматично даємо бали за перегляд анімації
+    if (taskPoints.task1 === 0) {
+        awardPoints('task1', 4);
+        document.getElementById('task1Status').textContent = '✅ Завершено (+4 бали)';
+    }
+    loadProgress();
+});
 
-        async function addPoints(points) {
-            const user = JSON.parse(localStorage.getItem('atmosphereUser'));
-            if (!user) return return;
-            const data = { name: user.name, class: user.class, theme: "Хмари", points: points };
-            await fetch(SHEET_URL, { method: 'POST', body: JSON.stringify(data) });
+function loadUserData() {
+    const saved = localStorage.getItem('atmosphereUser');
+    if (!saved) return window.location.href = 'index.html';
+    userData = JSON.parse(saved);
+    updatePointsDisplay();
+}
+
+function updatePointsDisplay() {
+    const total = Object.values(taskPoints).reduce((a, b) => a + b, 0);
+    document.getElementById('totalPoints').textContent = total;
+}
+
+function loadProgress() {
+    const progress = JSON.parse(localStorage.getItem('pressureProgress') || '{}');
+    taskPoints = { ...taskPoints, ...progress };
+    if (taskPoints.task1 > 0) document.getElementById('task1Status').textContent = '✅ Завершено (+4 бали)';
+    if (taskPoints.task2 > 0) document.getElementById('task2Status').textContent = '✅ Завершено (+4 бали)';
+    if (taskPoints.task3 > 0) document.getElementById('task3Status').textContent = '✅ Завершено (+4 бали)';
+}
+
+async function awardPoints(taskName, points) {
+    if (taskPoints[taskName] >= points) return;
+    taskPoints[taskName] = points;
+    localStorage.setItem('pressureProgress', JSON.stringify(taskPoints));
+    
+    try {
+        await fetch(SHEET_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: userData.name,
+                class: userData.class,
+                theme: 'Тиск',
+                points: points
+            })
+        });
+    } catch (e) {
+        console.warn('Не вдалося надіслати бали:', e);
+    }
+    
+    updatePointsDisplay();
+    if (Object.values(taskPoints).every(p => p > 0)) {
+        showReward(12);
+    }
+}
+
+// Завдання 2: Карта
+function submitMapTask() {
+    const value = document.getElementById('pressureValue').value.trim();
+    const color = document.getElementById('pressureColor').value.trim();
+    if (!value || !color) {
+        alert('Будь ласка, заповни обидва поля!');
+        return;
+    }
+    if (taskPoints.task2 === 0) {
+        awardPoints('task2', 4);
+        document.getElementById('task2Status').textContent = '✅ Завершено (+4 бали)';
+    }
+}
+
+// Завдання 3: Речення
+function checkSentence() {
+    const part1 = document.getElementById('sentence1').value.trim().toLowerCase();
+    const part2 = document.getElementById('sentence2').value.trim().toLowerCase();
+    
+    const correct1 = ['тиск повітря на поверхню землі', 'тиск повітряної оболонки', 'тиск, який чинить повітря'];
+    const correct2 = ['зменшується', 'падає', 'стає меншим'];
+    
+    const isCorrect1 = correct1.some(c => part1.includes(c.split(' ')[0]) || c.includes(part1.split(' ')[0]));
+    const isCorrect2 = correct2.includes(part2);
+    
+    if (isCorrect1 && isCorrect2) {
+        if (taskPoints.task3 === 0) {
+            awardPoints('task3', 4);
+            document.getElementById('task3Status').textContent = '✅ Правильно! (+4 бали)';
         }
+    } else {
+        alert('Спробуй ще раз! Підказка:\n1) "тиск повітря..."\n2) "зменшується"');
+    }
+}
 
-        async function completeSection(section, points) {
-            if (completed[section]) return;
-            completed[section] = true;
-            await addPoints(points);
-            alert(`+${points} балів!`);
-            checkAllCompleted();
-        }
-
-        function checkAllCompleted() {
-            if (completed.sim && completed.quiz && completed.rain) {
-                document.getElementById('completeLesson').style.display = 'block';
-            }
-        }
-
-        document.getElementById('completeSim').onclick = () => completeSection('sim', 20);
-        document.getElementById('completeQuiz').onclick = () => completeSection('quiz', 20);
-        document.getElementById('completeRain').onclick = () => completeSection('rain', 20);
-
-        document.getElementById('completeLesson').onclick = async () => {
-            await addPoints(60); // загалом
-            alert('Урок завершено! +60 балів за Хмари!');
-            window.location.href = 'index.html';
-        };
-
-        // Симулятор хмар (твій код з попередньої версії)
-        // + вікторина логіка (правильні відповіді)
-        // + анімація дощу (генерація крапель)
-        // + зірки на небо
-    </script>
+function showReward(points) {
+    document.getElementById('earnedPoints').textContent = points;
+    document.getElementById('rewardBadge').style.display = 'block';
+}
+</script>
 </body>
 </html>
