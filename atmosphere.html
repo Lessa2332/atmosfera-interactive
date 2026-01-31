@@ -1,1398 +1,568 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌡️ Температура повітря - Пригода з квестом!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Дружні кольори для дітей */
-        :root {
-            --kid-blue: #4DC3FF;
-            --kid-orange: #FF9966;
-            --kid-green: #66FF99;
-            --kid-purple: #CC99FF;
-            --kid-yellow: #FFCC00;
-            --kid-pink: #FF66CC;
-        }
-
-        /* Анімація для уваги */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes sparkle {
-            0% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.3; transform: scale(1); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Загальні стилі */
-        body {
-            background: linear-gradient(135deg, #0a192f 0%, #1a365d 100%);
-            background-attachment: fixed;
-        }
-
-        .quest-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            margin-bottom: 20px;
-            border-bottom: 3px dotted var(--kid-blue);
-            animation: slideIn 0.8s ease-out;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(45deg, var(--kid-blue), var(--kid-purple));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            box-shadow: 0 0 25px var(--kid-blue);
-            animation: bounce 2s infinite;
-        }
-
-        .points-display {
-            background: rgba(255, 204, 0, 0.3);
-            padding: 12px 25px;
-            border-radius: 50px;
-            border: 3px solid var(--kid-yellow);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.5);
-        }
-
-        /* Місія-контейнер */
-        .mission-container {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 3px solid var(--kid-green);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mission-container::before {
-            content: '🎯 МІСІЯ';
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: var(--kid-green);
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        /* Основна симуляція */
-        .main-simulation {
-            position: relative;
-            width: 100%;
-            height: 450px;
-            background: linear-gradient(to bottom, #1e3c72 0%, #2a5298 100%);
-            border-radius: 30px;
-            overflow: hidden;
-            margin: 30px 0;
-            border: 5px solid var(--kid-orange);
-            box-shadow: 0 0 60px rgba(255, 153, 102, 0.6);
-        }
-
-        .sky {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70%;
-            background: linear-gradient(to bottom, #4DC3FF, #87CEEB);
-        }
-
-        .ground-layer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 30%;
-            background: linear-gradient(to top, #2E8B57, #3CB371);
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-around;
-        }
-
-        /* Гори з різною висотою */
-        .mountain {
-            position: relative;
-            width: 120px;
-            height: 80px;
-            background: linear-gradient(to top, #556B2F, #6B8E23);
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            margin: 0 10px;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .mountain::after {
-            content: attr(data-temp);
-            position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .mountain:hover::after {
-            opacity: 1;
-        }
-
-        /* Сонце з анімацією */
-        .sun {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle at 30% 30%, #FFD700, #FF8C00);
-            border-radius: 50%;
-            box-shadow: 0 0 80px #FFA500, 0 0 120px rgba(255, 165, 0, 0.5);
-            cursor: grab;
-            z-index: 10;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: top 1s ease;
-        }
-
-        .sun:active {
-            cursor: grabbing;
-        }
-
-        .sun:hover {
-            animation: sparkle 1s infinite;
-        }
-
-        /* Промені сонця */
-        .sun-rays {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            border: 4px dashed rgba(255, 215, 0, 0.4);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 5;
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Термометри на різних висотах */
-        .thermometer-station {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 20;
-        }
-
-        .thermometer {
-            width: 35px;
-            height: 180px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px solid var(--kid-blue);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 0 25px var(--kid-blue);
-            position: relative;
-        }
-
-        .mercury {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: linear-gradient(to top, #00FFFF, #FF4500);
-            transition: height 1.5s ease;
-        }
-
-        .temp-label {
-            position: absolute;
-            bottom: -30px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .height-label {
-            position: absolute;
-            top: -30px;
-            color: white;
-            font-weight: bold;
-            background: rgba(0,0,0,0.5);
-            padding: 3px 8px;
-            border-radius: 8px;
-        }
-
-        /* Контрольна панель */
-        .control-panel {
-            background: rgba(77, 195, 255, 0.1);
-            padding: 25px;
-            border-radius: 25px;
-            margin: 30px 0;
-            border: 3px solid var(--kid-blue);
-            box-shadow: 0 0 35px rgba(77, 195, 255, 0.3);
-        }
-
-        .time-selector {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .time-btn {
-            padding: 18px 25px;
-            background: linear-gradient(145deg, var(--kid-purple), var(--kid-blue));
-            border: none;
-            color: white;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 170px;
-            justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .time-btn:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .time-btn.active {
-            background: linear-gradient(145deg, var(--kid-yellow), var(--kid-orange));
-            box-shadow: 0 0 40px var(--kid-yellow);
-            animation: bounce 1s infinite;
-        }
-
-        /* Інтерактивні карточки знань */
-        .knowledge-card {
-            background: rgba(102, 255, 153, 0.1);
-            padding: 25px;
-            border-radius: 25px;
-            margin: 25px 0;
-            border: 3px solid var(--kid-green);
-            border-left: 10px solid var(--kid-green);
-            position: relative;
-            transition: transform 0.3s;
-        }
-
-        .knowledge-card:hover {
-            transform: translateX(10px);
-        }
-
-        .knowledge-card h3 {
-            color: var(--kid-green);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .card-number {
-            background: var(--kid-green);
-            color: #000;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        /* Ігровий тест */
-        .quiz-game {
-            background: rgba(255, 102, 204, 0.1);
-            padding: 30px;
-            border-radius: 30px;
-            margin: 40px 0;
-            border: 4px solid var(--kid-pink);
-            box-shadow: 0 0 40px rgba(255, 102, 204, 0.3);
-        }
-
-        .question-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 20px;
-            margin: 25px 0;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
-        }
-
-        .question-card:hover {
-            border-color: var(--kid-yellow);
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
-        }
-
-        .answer-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .answer-btn {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid var(--kid-blue);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .answer-btn:hover {
-            background: rgba(77, 195, 255, 0.2);
-            transform: translateY(-5px);
-        }
-
-        .answer-btn.correct {
-            background: rgba(102, 255, 153, 0.3);
-            border-color: var(--kid-green);
-            animation: sparkle 0.5s;
-        }
-
-        .answer-btn.wrong {
-            background: rgba(255, 102, 102, 0.3);
-            border-color: #FF6666;
-        }
-
-        .answer-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* Нагороди та прогрес */
-        .reward-badge {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, var(--kid-yellow), var(--kid-orange));
-            padding: 40px;
-            border-radius: 30px;
-            z-index: 1000;
-            box-shadow: 0 0 100px rgba(255, 204, 0, 0.8);
-            animation: bounce 1s infinite, slideIn 0.5s ease-out;
-            display: none;
-            text-align: center;
-            max-width: 500px;
-            border: 5px solid gold;
-        }
-
-        .badge-stars {
-            font-size: 60px;
-            margin: 20px 0;
-            text-shadow: 0 0 30px gold;
-        }
-
-        .progress-tracker {
-            background: rgba(0,0,0,0.2);
-            padding: 20px;
-            border-radius: 20px;
-            margin: 20px 0;
-        }
-
-        .progress-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin: 10px 0;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-        }
-
-        .progress-item.completed {
-            background: rgba(102, 255, 153, 0.2);
-            border-left: 5px solid var(--kid-green);
-        }
-
-        /* Мобільна адаптація */
-        @media (max-width: 768px) {
-            .main-simulation {
-                height: 350px;
-            }
-            
-            .sun {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .time-btn {
-                min-width: 140px;
-                padding: 15px 20px;
-            }
-            
-            .answer-options {
-                grid-template-columns: 1fr;
-            }
-            
-            .user-avatar {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-        }
-
-        /* Спеціальні ефекти */
-        .sparkle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: sparkle 1s infinite;
-        }
-
-        .confetti {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            pointer-events: none;
-            z-index: 999;
-            animation: fall linear forwards;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌡️ Температура повітря - Дослідження для 6 класу</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --kid-blue: #4DC3FF;
+  --kid-orange: #FF9966;
+  --kid-green: #66FF99;
+  --kid-purple: #CC99FF;
+  --kid-yellow: #FFCC00;
+  --kid-pink: #FF66CC;
+}
+body {
+  background: linear-gradient(135deg, #0a192f 0%, #1a365d 100%);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.quest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-bottom: 3px dotted var(--kid-blue);
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(45deg, var(--kid-blue), var(--kid-purple));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 0 20px var(--kid-blue);
+}
+.points-display {
+  background: rgba(255, 204, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid var(--kid-yellow);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+.task-card, .quiz-game {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 25px;
+  margin: 25px 0;
+  border: 2px solid var(--kid-green);
+}
+.btn-primary {
+  background: linear-gradient(145deg, var(--kid-green), var(--kid-blue));
+  color: black;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px var(--kid-green);
+}
+.completed {
+  background: rgba(102, 255, 153, 0.2) !important;
+  border-left: 5px solid var(--kid-green);
+}
+.answer-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 15px;
+  margin: 10px 0;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid var(--kid-blue);
+  border-radius: 15px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.answer-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateX(5px);
+}
+.answer-btn.correct {
+  background: rgba(102, 255, 153, 0.4);
+  border-color: var(--kid-green);
+}
+.answer-btn.wrong {
+  background: rgba(255, 102, 102, 0.4);
+  border-color: #ff6666;
+}
+.answer-icon {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  background: var(--kid-blue);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 30px;
+  margin-right: 10px;
+  color: black;
+  font-weight: bold;
+}
+#graphCanvas {
+  width: 100%;
+  height: 200px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  margin: 15px 0;
+}
+textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--kid-blue);
+  color: white;
+  margin: 10px 0;
+}
+.reward-badge {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, gold, orange);
+  padding: 30px;
+  border-radius: 20px;
+  z-index: 1000;
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+  display: none;
+  text-align: center;
+  max-width: 400px;
+}
+</style>
 </head>
 <body>
-    <!-- Конфеті -->
-    <div id="confetti-container"></div>
-
-    <div class="container">
-        <div class="lesson-card">
-            <!-- Хедер з аватаркою -->
-            <div class="quest-header">
-                <div class="user-info">
-                    <a href="index.html" class="btn-primary" style="background: linear-gradient(145deg, var(--kid-orange), var(--kid-yellow));">
-                        <i class="fas fa-home"></i> Головна
-                    </a>
-                    <div class="user-avatar">
-                        <i class="fas fa-user-astronaut"></i>
-                    </div>
-                    <div>
-                        <div id="userName" style="font-weight: bold; font-size: 22px; color: var(--kid-blue);">
-                            Привіт, Метеоролог!
-                        </div>
-                        <div id="userClass" style="opacity: 0.9; font-size: 16px;">
-                            Готовий до відкриттів?
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="points-display">
-                    <i class="fas fa-gem" style="color: var(--kid-blue);"></i>
-                    <span id="totalPoints">0</span> знань-кристалів
-                </div>
-            </div>
-            
-            <!-- Карта місії -->
-            <div class="mission-container">
-                <h2 style="color: var(--kid-green); margin-bottom: 15px;">
-                    <i class="fas fa-map-marked-alt"></i> МІСІЯ: ДОСЛІДНИК ТЕМПЕРАТУРИ
-                </h2>
-                <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
-                        <h3 style="color: var(--kid-yellow);">Твої завдання:</h3>
-                        <ul style="margin: 15px 0; padding-left: 25px;">
-                            <li>🎯 Зрозуміти, як нагрівається повітря</li>
-                            <li>🌡️ Вивчити роботу термометра</li>
-                            <li>🏔️ Дослідити температуру на різних висотах</li>
-                            <li>⏰ З'ясувати, чому вдень тепліше</li>
-                        </ul>
-                    </div>
-                    <div style="flex: 1; min-width: 200px;">
-                        <h3 style="color: var(--kid-pink);">Твої нагороди:</h3>
-                        <div class="progress-tracker">
-                            <div class="progress-item">
-                                <span>🔬 Перший експеримент</span>
-                                <span id="exp1" class="progress-icon">🔒</span>
-                            </div>
-                            <div class="progress-item">
-                                <span>📊 Аналіз даних</span>
-                                <span id="exp2" class="progress-icon">🔒</span>
-                            </div>
-                            <div class="progress-item">
-                                <span>🏆 Тест-майстер</span>
-                                <span id="exp3" class="progress-icon">🔒</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Головна симуляція -->
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: var(--kid-orange); text-shadow: 0 0 20px rgba(255, 153, 102, 0.5);">
-                    <i class="fas fa-temperature-high"></i> ТЕМПЕРАТУРА ПОВІТРЯ
-                </h1>
-                <p class="subtitle" style="font-size: 22px; color: var(--kid-blue);">
-                    Чому в горах холодніше? Чому вдень тепліше? Досліджуй!
-                </p>
-            </div>
-            
-            <!-- Інтерактивна лабораторія -->
-            <div class="mission-container">
-                <h2 style="color: var(--kid-orange); display: flex; align-items: center; gap: 15px;">
-                    <i class="fas fa-flask"></i> ЛАБОРАТОРІЯ МЕТЕОРОЛОГА
-                </h2>
-                <p style="margin-bottom: 20px; font-size: 18px;">
-                    <strong>Завдання:</strong> Переміщуй сонце та спостерігай, як змінюється температура на різних висотах!
-                </p>
-                
-                <div class="main-simulation" id="simulation">
-                    <div class="sky"></div>
-                    <div class="sun-rays"></div>
-                    <div class="sun" id="sun" title="Перетягни сонце вгору-вниз!"></div>
-                    
-                    <!-- Гори з термометрами -->
-                    <div class="ground-layer">
-                        <div class="thermometer-station" style="left: 15%; bottom: 30px;">
-                            <div class="height-label">0 м (рівень моря)</div>
-                            <div class="thermometer">
-                                <div class="mercury" id="mercury0"></div>
-                            </div>
-                            <div class="temp-label" id="temp0">+24°C</div>
-                        </div>
-                        
-                        <div class="mountain" data-temp="+18°C" style="height: 60px; width: 100px;"></div>
-                        
-                        <div class="thermometer-station" style="left: 35%; bottom: 100px;">
-                            <div class="height-label">1000 м</div>
-                            <div class="thermometer">
-                                <div class="mercury" id="mercury1"></div>
-                            </div>
-                            <div class="temp-label" id="temp1">+18°C</div>
-                        </div>
-                        
-                        <div class="mountain" data-temp="+12°C" style="height: 90px; width: 130px;"></div>
-                        
-                        <div class="thermometer-station" style="left: 55%; bottom: 160px;">
-                            <div class="height-label">2000 м</div>
-                            <div class="thermometer">
-                                <div class="mercury" id="mercury2"></div>
-                            </div>
-                            <div class="temp-label" id="temp2">+12°C</div>
-                        </div>
-                        
-                        <div class="mountain" data-temp="+6°C" style="height: 120px; width: 150px;"></div>
-                        
-                        <div class="thermometer-station" style="left: 75%; bottom: 220px;">
-                            <div class="height-label">3000 м</div>
-                            <div class="thermometer">
-                                <div class="mercury" id="mercury3"></div>
-                            </div>
-                            <div class="temp-label" id="temp3">+6°C</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <p style="text-align: center; margin-top: 20px; color: var(--kid-yellow);">
-                    <i class="fas fa-lightbulb"></i> <strong>Відкриття:</strong> На кожний кілометр вгору холоднішає на 6°C!
-                </p>
-            </div>
-            
-            <!-- Панель контролю -->
-            <div class="control-panel">
-                <h3 style="color: var(--kid-blue); text-align: center; margin-bottom: 25px;">
-                    <i class="fas fa-clock"></i> ДОСЛІДЖУЄМО ДОБОВУ ЗМІНУ ТЕМПЕРАТУРИ
-                </h3>
-                <p style="text-align: center; margin-bottom: 20px;">
-                    Оберіть час доби та подивіться, як змінюється температура:
-                </p>
-                
-                <div class="time-selector">
-                    <button class="time-btn" data-time="4">
-                        <i class="fas fa-moon"></i> 4:00 - Найхолодніше
-                    </button>
-                    <button class="time-btn" data-time="8">
-                        <i class="fas fa-sunrise"></i> 8:00 - Ранок
-                    </button>
-                    <button class="time-btn active" data-time="12">
-                        <i class="fas fa-sun"></i> 12:00 - Полудень
-                    </button>
-                    <button class="time-btn" data-time="15">
-                        <i class="fas fa-sun"></i> 15:00 - Найтепліше
-                    </button>
-                    <button class="time-btn" data-time="19">
-                        <i class="fas fa-sunset"></i> 19:00 - Вечір
-                    </button>
-                    <button class="time-btn" data-time="23">
-                        <i class="fas fa-star"></i> 23:00 - Ніч
-                    </button>
-                </div>
-                
-                <div style="text-align: center; margin-top: 30px;">
-                    <div class="knowledge-card">
-                        <h3><span class="card-number">💡</span> ЦІКАВИНКА</h3>
-                        <p style="font-size: 18px;">
-                            <strong>Сонце не гріє повітря безпосередньо!</strong> Його промені, як скло вікна, 
-                            проходять крізь повітря і гріють земну поверхню. Вже від нагрітої поверхні 
-                            нагрівається повітря!
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Картки знань (відповідно до підручника) -->
-            <div class="mission-container">
-                <h2 style="color: var(--kid-green); margin-bottom: 25px;">
-                    <i class="fas fa-book-open"></i> ЩО КАЖЕ ПІДРУЧНИК?
-                </h2>
-                
-                <div class="knowledge-card">
-                    <h3><span class="card-number">1</span> ТЕРМОМЕТР - ПРИЛАД ВІДКРИТТІВ</h3>
-                    <p>Термометр вимірює температуру повітря. Щоб отримати точні результати:</p>
-                    <ul style="margin: 15px 0; padding-left: 25px;">
-                        <li>📏 Тримати в затінку (не на сонці!)</li>
-                        <li>🌡️ Використовувати шкалу Цельсія (запропонував шведський ученик)</li>
-                        <li>🕒 Знімати показники кожні 3 години на метеостанціях</li>
-                    </ul>
-                </div>
-                
-                <div class="knowledge-card">
-                    <h3><span class="card-number">2</span> ЯК НАГРІВАЄТЬСЯ ПОВІТРЯ?</h3>
-                    <p>Процес у 3 кроки:</p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 40px;">☀️</div>
-                            <p>1. Сонячні промені проходять крізь повітря</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 40px;">🌍</div>
-                            <p>2. Нагрівають земну поверхню</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 40px;">🔥</div>
-                            <p>3. Повітря нагрівається від поверхні</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="knowledge-card">
-                    <h3><span class="card-number">3</span> ЗАКОНОМІРНІСТЬ В ТРОПОСФЕРІ</h3>
-                    <p>З висотою температура повітря знижується:</p>
-                    <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 15px; margin: 15px 0;">
-                        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                            <div style="font-size: 24px; color: var(--kid-blue);">📉</div>
-                            <p style="font-size: 22px; font-weight: bold; color: var(--kid-green);">
-                                На кожен кілометр вгору холоднішає на 6°C
-                            </p>
-                            <p style="margin-top: 10px;">Це називається <strong>вертикальним температурним градієнтом</strong></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Ігровий тест -->
-            <div class="quiz-game">
-                <h2 style="color: var(--kid-pink); text-align: center; margin-bottom: 30px;">
-                    <i class="fas fa-gamepad"></i> ПЕРЕВІР СЕБЕ: ТЕСТ-ГРА
-                </h2>
-                
-                <div class="question-card">
-                    <h3 style="color: var(--kid-blue);">
-                        <i class="fas fa-question-circle"></i> Запитання 1: Чому в горах холодніше, ніж на рівнині?
-                    </h3>
-                    <div class="answer-options">
-                        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 1)">
-                            <span class="answer-icon">A</span>
-                            Повітря нагрівається від земної поверхні, а в горах поверхня далеко
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 1)">
-                            <span class="answer-icon">B</span>
-                            Там сильніший вітер
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 1)">
-                            <span class="answer-icon">C</span>
-                            Сонце там менше світить
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="question-card">
-                    <h3 style="color: var(--kid-blue);">
-                        <i class="fas fa-question-circle"></i> Запитання 2: Коли вдень найвища температура?
-                    </h3>
-                    <div class="answer-options">
-                        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 2)">
-                            <span class="answer-icon">A</span>
-                            О 14-15 годині (через 2-3 години після полудня)
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 2)">
-                            <span class="answer-icon">B</span>
-                            О 12:00 точно в полудень
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 2)">
-                            <span class="answer-icon">C</span>
-                            О 10:00 ранку
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="question-card">
-                    <h3 style="color: var(--kid-blue);">
-                        <i class="fas fa-question-circle"></i> Запитання 3: Як правильно вимірювати температуру повітря?
-                    </h3>
-                    <div class="answer-options">
-                        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 3)">
-                            <span class="answer-icon">A</span>
-                            Термометром у затінку, на висоті 2 метри
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 3)">
-                            <span class="answer-icon">B</span>
-                            На сонці, щоб швидше нагрілося
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 3)">
-                            <span class="answer-icon">C</span>
-                            Будь-де, головне — на висоті
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="question-card">
-                    <h3 style="color: var(--kid-blue);">
-                        <i class="fas fa-question-circle"></i> Запитання 4: Що таке температурна амплітуда?
-                    </h3>
-                    <div class="answer-options">
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 4)">
-                            <span class="answer-icon">A</span>
-                            Середня температура за місяць
-                        </button>
-                        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 4)">
-                            <span class="answer-icon">B</span>
-                            Різниця між найвищою і найнижчою температурою
-                        </button>
-                        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 4)">
-                            <span class="answer-icon">C</span>
-                            Температура вночі
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 40px;">
-                    <button class="btn-primary" onclick="checkAllAnswers()" 
-                            style="background: linear-gradient(145deg, var(--kid-pink), var(--kid-purple)); padding: 20px 40px; font-size: 22px;">
-                        <i class="fas fa-check-double"></i> ПЕРЕВІРИТИ ВІДПОВІДІ
-                    </button>
-                    
-                    <div id="quizResult" style="display: none; margin-top: 30px;">
-                        <div class="message success" id="resultMessage"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Кнопки завершення -->
-            <div style="text-align: center; margin: 50px 0;">
-                <button class="btn-primary" id="nextButton" onclick="completeLesson()" 
-                        style="background: linear-gradient(145deg, var(--kid-green), var(--kid-blue)); 
-                               padding: 25px 50px; font-size: 24px; display: none;">
-                    <i class="fas fa-trophy"></i> ЗАВЕРШИТИ УРОК ТА ОТРИМАТИ НАГОРОДУ!
-                </button>
-            </div>
-            
-            <!-- Вікно нагороди -->
-            <div class="reward-badge" id="rewardBadge">
-                <h2 style="color: #000; margin-bottom: 20px;">
-                    <i class="fas fa-medal"></i> ВІТАЄМО, ДОСЛІДНИКУ!
-                </h2>
-                <div class="badge-stars" id="badgeStars">★★★★★</div>
-                <p style="font-size: 20px; margin-bottom: 20px; color: #000;">
-                    Ти успішно завершив місію "Температура повітря"!
-                </p>
-                <div style="font-size: 28px; color: #000; margin: 20px 0;">
-                    🏆 +<span id="pointsEarned">50</span> знань-кристалів
-                </div>
-                <p style="margin-bottom: 30px; color: #000;">
-                    Твій результат буде видно вчителю в таблиці успішності!
-                </p>
-                <div style="display: flex; gap: 20px; justify-content: center;">
-                    <a href="page2.html" class="btn-primary" style="background: linear-gradient(145deg, var(--kid-orange), var(--kid-yellow));">
-                        <i class="fas fa-arrow-right"></i> Наступна місія
-                    </a>
-                    <a href="index.html" class="btn-secondary" 
-                       style="background: rgba(0,0,0,0.2); color: white; border: 2px solid white;">
-                        <i class="fas fa-chart-line"></i> Переглянути прогрес
-                    </a>
-                </div>
-            </div>
-        </div>
+<div class="container">
+  <!-- Хедер -->
+  <div class="quest-header">
+    <div class="user-info">
+      <a href="index.html" class="btn-primary" style="font-size:16px; padding:8px 16px;">
+        <i class="fas fa-home"></i> Головна
+      </a>
+      <div class="user-avatar">
+        <i class="fas fa-user-astronaut"></i>
+      </div>
+      <div>
+        <div id="userName">Привіт, досліднику!</div>
+        <div id="userClass" style="font-size:14px; opacity:0.8;">6 клас</div>
+      </div>
     </div>
+    <div class="points-display">
+      <i class="fas fa-gem"></i> <span id="totalPoints">0</span> балів
+    </div>
+  </div>
 
-    <script>
-        // Константи та глобальні змінні
-        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
-        
-        let userData = {};
-        let correctAnswers = 0;
-        let totalQuestions = 4;
-        let currentSunPosition = 200; // початкова позиція сонця
-        let isDragging = false;
-        let completedTasks = {
-            experiment1: false,
-            experiment2: false,
-            experiment3: false
-        };
-        
-        // Ініціалізація
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserData();
-            initializeSimulation();
-            createStars();
-            updateTemperatures();
-            initializeTimeButtons();
-            createSparkles();
-        });
-        
-        // Завантаження даних користувача
-        function loadUserData() {
-            const saved = localStorage.getItem('atmosphereUser');
-            if (!saved) {
-                alert('Привіт! Спочатку зареєструйся на головній сторінці! 🚀');
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            userData = JSON.parse(saved);
-            document.getElementById('userName').textContent = `Привіт, ${userData.name}!`;
-            document.getElementById('userClass').textContent = `${userData.class} клас - метеоролог`;
-            
-            // Оновлюємо бали
-            updatePointsDisplay();
-            
-            // Завантажуємо прогрес
-            loadProgress();
-        }
-        
-        // Оновлення відображення балів
-        function updatePointsDisplay() {
-            let totalPoints = 0;
-            if (userData.scores) {
-                Object.values(userData.scores).forEach(points => {
-                    totalPoints += points;
-                });
-            }
-            document.getElementById('totalPoints').textContent = totalPoints;
-        }
-        
-        // Завантаження прогресу
-        function loadProgress() {
-            const progress = JSON.parse(localStorage.getItem('temperatureProgress') || '{}');
-            completedTasks = { ...completedTasks, ...progress };
-            
-            // Оновлюємо іконки прогресу
-            if (completedTasks.experiment1) {
-                document.getElementById('exp1').textContent = '✅';
-                document.getElementById('exp1').parentElement.classList.add('completed');
-            }
-            if (completedTasks.experiment2) {
-                document.getElementById('exp2').textContent = '✅';
-                document.getElementById('exp2').parentElement.classList.add('completed');
-            }
-            if (completedTasks.experiment3) {
-                document.getElementById('exp3').textContent = '✅';
-                document.getElementById('exp3').parentElement.classList.add('completed');
-            }
-        }
-        
-        // Створення зірочок
-        function createStars() {
-            const simulation = document.getElementById('simulation');
-            const sky = simulation.querySelector('.sky');
-            
-            for (let i = 0; i < 30; i++) {
-                const star = document.createElement('div');
-                star.className = 'sparkle';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 50 + '%';
-                star.style.animationDelay = Math.random() * 2 + 's';
-                sky.appendChild(star);
-            }
-        }
-        
-        // Створення іскрок
-        function createSparkles() {
-            setInterval(() => {
-                const sparkle = document.createElement('div');
-                sparkle.className = 'sparkle';
-                sparkle.style.left = Math.random() * 100 + 'vw';
-                sparkle.style.top = Math.random() * 100 + 'vh';
-                document.body.appendChild(sparkle);
-                
-                setTimeout(() => sparkle.remove(), 1000);
-            }, 500);
-        }
-        
-        // Ініціалізація симуляції
-        function initializeSimulation() {
-            const sun = document.getElementById('sun');
-            const simulation = document.getElementById('simulation');
-            
-            // Десктопні події
-            sun.addEventListener('mousedown', startDrag);
-            document.addEventListener('mousemove', dragSun);
-            document.addEventListener('mouseup', stopDrag);
-            
-            // Мобільні події
-            sun.addEventListener('touchstart', startDragTouch);
-            document.addEventListener('touchmove', dragSunTouch);
-            document.addEventListener('touchend', stopDrag);
-            
-            sun.style.cursor = 'grab';
-            
-            // Позначаємо перший експеримент як завершений
-            simulation.addEventListener('mousedown', () => {
-                if (!completedTasks.experiment1) {
-                    completedTasks.experiment1 = true;
-                    localStorage.setItem('temperatureProgress', JSON.stringify(completedTasks));
-                    document.getElementById('exp1').textContent = '✅';
-                    document.getElementById('exp1').parentElement.classList.add('completed');
-                    showMiniReward('Перший експеримент завершено!');
-                }
-            });
-        }
-        
-        // Функції перетягування
-        function startDrag(e) {
-            isDragging = true;
-            e.preventDefault();
-            document.getElementById('sun').style.cursor = 'grabbing';
-        }
-        
-        function startDragTouch(e) {
-            isDragging = true;
-            e.preventDefault();
-        }
-        
-        function dragSun(e) {
-            if (!isDragging) return;
-            
-            const sun = document.getElementById('sun');
-            const container = document.querySelector('.main-simulation');
-            const containerRect = container.getBoundingClientRect();
-            
-            let y = e.clientY - containerRect.top;
-            y = Math.max(50, Math.min(y, containerRect.height * 0.7 - 50));
-            
-            currentSunPosition = y;
-            sun.style.top = y + 'px';
-            updateTemperatures();
-        }
-        
-        function dragSunTouch(e) {
-            if (!isDragging || !e.touches[0]) return;
-            
-            const sun = document.getElementById('sun');
-            const container = document.querySelector('.main-simulation');
-            const containerRect = container.getBoundingClientRect();
-            
-            let y = e.touches[0].clientY - containerRect.top;
-            y = Math.max(50, Math.min(y, containerRect.height * 0.7 - 50));
-            
-            currentSunPosition = y;
-            sun.style.top = y + 'px';
-            updateTemperatures();
-        }
-        
-        function stopDrag() {
-            isDragging = false;
-            document.getElementById('sun').style.cursor = 'grab';
-            
-            // Перевіряємо другий експеримент
-            if (!completedTasks.experiment2 && currentSunPosition < 150) {
-                completedTasks.experiment2 = true;
-                localStorage.setItem('temperatureProgress', JSON.stringify(completedTasks));
-                document.getElementById('exp2').textContent = '✅';
-                document.getElementById('exp2').parentElement.classList.add('completed');
-                showMiniReward('Вітаю! Ти відкрив закономірність!');
-            }
-        }
-        
-        // Оновлення температур
-        function updateTemperatures() {
-            const container = document.querySelector('.main-simulation');
-            const containerHeight = container.clientHeight;
-            
-            // Температура залежить від положення сонця
-            const baseTemp = 15 + ((containerHeight * 0.7 - currentSunPosition) / containerHeight * 0.7) * 20;
-            
-            // Оновлюємо температури на різних висотах
-            const heights = [0, 1000, 2000, 3000]; // метри
-            heights.forEach((height, index) => {
-                // На кожний кілометр холоднішає на 6°C
-                let temp = baseTemp - (height / 1000) * 6;
-                temp = Math.round(temp);
-                
-                const mercury = document.getElementById(`mercury${index}`);
-                const tempLabel = document.getElementById(`temp${index}`);
-                
-                // Оновлюємо висоту ртуті
-                const mercuryHeight = Math.max(10, Math.min(100, ((temp + 20) / 50) * 100));
-                mercury.style.height = mercuryHeight + '%';
-                
-                // Оновлюємо мітку
-                tempLabel.textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
-                
-                // Змінюємо колір
-                if (temp < 0) {
-                    mercury.style.background = 'linear-gradient(to top, #00FFFF, #0088FF)';
-                    tempLabel.style.color = '#00FFFF';
-                } else if (temp < 10) {
-                    mercury.style.background = 'linear-gradient(to top, #66FF99, #00CC66)';
-                    tempLabel.style.color = '#66FF99';
-                } else if (temp < 20) {
-                    mercury.style.background = 'linear-gradient(to top, #FFCC00, #FF9900)';
-                    tempLabel.style.color = '#FFCC00';
-                } else {
-                    mercury.style.background = 'linear-gradient(to top, #FF4500, #CC0000)';
-                    tempLabel.style.color = '#FF4500';
-                }
-            });
-        }
-        
-        // Ініціалізація кнопок часу
-        function initializeTimeButtons() {
-            const timeButtons = document.querySelectorAll('.time-btn');
-            
-            timeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    timeButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const time = parseInt(this.dataset.time);
-                    setTimeOfDay(time);
-                });
-            });
-        }
-        
-        // Встановлення часу доби
-        function setTimeOfDay(hour) {
-            const times = {
-                4: { sunY: 300, text: '🌙 Найхолодніший час' },
-                8: { sunY: 250, text: '🌅 Ранок' },
-                12: { sunY: 100, text: '☀️ Полудень' },
-                15: { sunY: 120, text: '🌞 Найтепліше' },
-                19: { sunY: 200, text: '🌇 Вечір' },
-                23: { sunY: 280, text: '🌙 Ніч' }
-            };
-            
-            if (times[hour]) {
-                const sun = document.getElementById('sun');
-                currentSunPosition = times[hour].sunY;
-                sun.style.top = currentSunPosition + 'px';
-                updateTemperatures();
-            }
-        }
-        
-        // Перевірка відповіді
-        function checkAnswer(button, questionNum) {
-            if (button.classList.contains('answered')) return;
-            
-            const isCorrect = button.dataset.correct === 'true';
-            const question = button.closest('.question-card');
-            const options = question.querySelectorAll('.answer-btn');
-            
-            // Блокуємо всі варіанти
-            options.forEach(opt => {
-                opt.style.pointerEvents = 'none';
-                if (opt.dataset.correct === 'true') {
-                    opt.classList.add('correct');
-                    createConfetti(opt);
-                } else if (opt === button && !isCorrect) {
-                    opt.classList.add('wrong');
-                }
-            });
-            
-            if (isCorrect) {
-                correctAnswers++;
-                button.classList.add('answered');
-                createConfetti(button);
-            }
-            
-            updateQuizProgress();
-        }
-        
-        // Оновлення прогресу тесту
-        function updateQuizProgress() {
-            if (correctAnswers === totalQuestions) {
-                document.getElementById('nextButton').style.display = 'inline-block';
-                
-                // Позначаємо третій експеримент як завершений
-                if (!completedTasks.experiment3) {
-                    completedTasks.experiment3 = true;
-                    localStorage.setItem('temperatureProgress', JSON.stringify(completedTasks));
-                    document.getElementById('exp3').textContent = '✅';
-                    document.getElementById('exp3').parentElement.classList.add('completed');
-                }
-            }
-        }
-        
-        // Перевірка всіх відповідей
-        function checkAllAnswers() {
-            const allQuestions = document.querySelectorAll('.question-card');
-            let allAnswered = true;
-            let answeredCount = 0;
-            
-            allQuestions.forEach(question => {
-                const options = question.querySelectorAll('.answer-btn');
-                const answered = Array.from(options).some(opt => 
-                    opt.classList.contains('correct') || opt.classList.contains('wrong')
-                );
-                
-                if (answered) answeredCount++;
-                if (!answered) allAnswered = false;
-            });
-            
-            const resultMessage = document.getElementById('resultMessage');
-            const quizResult = document.getElementById('quizResult');
-            
-            if (!allAnswered) {
-                resultMessage.innerHTML = `
-                    <div style="color: var(--kid-yellow); font-size: 20px;">
-                        <i class="fas fa-exclamation-triangle"></i> 
-                        Ще не всі питання відповіді! 
-                        <div style="font-size: 16px; margin-top: 10px;">
-                            Відповів на ${answeredCount} з ${totalQuestions}
-                        </div>
-                    </div>
-                `;
-                quizResult.style.display = 'block';
-            } else {
-                let message = '';
-                let stars = '';
-                
-                if (correctAnswers === totalQuestions) {
-                    message = 'ВІДМІННО! Ти майстер метеорології! 🏆';
-                    stars = '★★★★★';
-                    createConfettiBurst();
-                } else if (correctAnswers >= 2) {
-                    message = 'ДУЖЕ ДОБРЕ! Майже все знаєш! 👍';
-                    stars = '★★★☆☆';
-                } else {
-                    message = 'НЕПОГАНО! Спробуй ще раз! 💪';
-                    stars = '★☆☆☆☆';
-                }
-                
-                resultMessage.innerHTML = `
-                    <div style="font-size: 22px; color: var(--kid-green);">
-                        <i class="fas fa-trophy"></i> ${message}
-                        <div style="font-size: 40px; color: gold; margin: 15px 0;">${stars}</div>
-                        <div style="font-size: 18px;">
-                            Правильних відповідей: ${correctAnswers} з ${totalQuestions}
-                        </div>
-                    </div>
-                `;
-                quizResult.style.display = 'block';
-                
-                // Прокручуємо до результатів
-                quizResult.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-        
-        // Завершення уроку
-        async function completeLesson() {
-            // Розраховуємо бали
-            let points = 0;
-            let stars = 0;
-            
-            if (correctAnswers === totalQuestions) {
-                points = 50;
-                stars = 5;
-            } else if (correctAnswers >= 3) {
-                points = 40;
-                stars = 4;
-            } else if (correctAnswers >= 2) {
-                points = 30;
-                stars = 3;
-            } else {
-                points = 20;
-                stars = 2;
-            }
-            
-            // Додаємо бонус за всі експерименти
-            if (completedTasks.experiment1 && completedTasks.experiment2 && completedTasks.experiment3) {
-                points += 20;
-                stars = Math.min(5, stars + 1);
-            }
-            
-            try {
-                // Відправляємо на сервер
-                const response = await fetch(SHEET_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: userData.name,
-                        class: userData.class,
-                        theme: 'Температура',
-                        points: points
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    // Оновлюємо локальні дані
-                    if (!userData.scores) userData.scores = {};
-                    userData.scores.temperature = (userData.scores.temperature || 0) + points;
-                    localStorage.setItem('atmosphereUser', JSON.stringify(userData));
-                    
-                    // Показуємо нагороду
-                    showReward(points, stars);
-                }
-            } catch (error) {
-                console.error('Помилка:', error);
-                // Локальне збереження
-                if (!userData.scores) userData.scores = {};
-                userData.scores.temperature = (userData.scores.temperature || 0) + points;
-                localStorage.setItem('atmosphereUser', JSON.stringify(userData));
-                
-                showReward(points, stars);
-            }
-        }
-        
-        // Показ нагороди
-        function showReward(points, stars) {
-            document.getElementById('pointsEarned').textContent = points;
-            document.getElementById('badgeStars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
-            document.getElementById('rewardBadge').style.display = 'block';
-            
-            // Великий вибух конфетті
-            createConfettiBurst();
-            
-            // Зберігаємо факт завершення
-            const completed = JSON.parse(localStorage.getItem('completedLessons') || '[]');
-            if (!completed.includes('temperature')) {
-                completed.push('temperature');
-                localStorage.setItem('completedLessons', JSON.stringify(completed));
-            }
-        }
-        
-        // Міні-нагорода
-        function showMiniReward(text) {
-            const miniReward = document.createElement('div');
-            miniReward.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(145deg, var(--kid-green), var(--kid-blue));
-                color: white;
-                padding: 15px 25px;
-                border-radius: 15px;
-                z-index: 1000;
-                animation: slideIn 0.5s;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            `;
-            miniReward.innerHTML = `<i class="fas fa-star"></i> ${text}`;
-            document.body.appendChild(miniReward);
-            
-            setTimeout(() => {
-                miniReward.style.animation = 'slideIn 0.5s reverse';
-                setTimeout(() => miniReward.remove(), 500);
-            }, 3000);
-        }
-        
-        // Створення конфетті
-        function createConfetti(element) {
-            for (let i = 0; i < 10; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = (element.getBoundingClientRect().left + Math.random() * 100) + 'px';
-                confetti.style.top = (element.getBoundingClientRect().top) + 'px';
-                confetti.style.backgroundColor = [
-                    '#FF9966', '#4DC3FF', '#66FF99', '#CC99FF', '#FFCC00'
-                ][Math.floor(Math.random() * 5)];
-                confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
-                
-                document.getElementById('confetti-container').appendChild(confetti);
-                
-                setTimeout(() => confetti.remove(), 2000);
-            }
-        }
-        
-        function createConfettiBurst() {
-            for (let i = 0; i < 100; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.top = '0px';
-                confetti.style.backgroundColor = [
-                    '#FF9966', '#4DC3FF', '#66FF99', '#CC99FF', '#FFCC00'
-                ][Math.floor(Math.random() * 5)];
-                confetti.style.width = (Math.random() * 20 + 10) + 'px';
-                confetti.style.height = confetti.style.width;
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                
-                document.getElementById('confetti-container').appendChild(confetti);
-                
-                setTimeout(() => confetti.remove(), 5000);
-            }
-        }
-    </script>
+  <!-- Завдання 1: Спостереження -->
+  <div class="task-card" id="task1Card">
+    <h3>🔭 Завдання 1: Спостерігай за Сонцем</h3>
+    <p>Перетягни Сонце вгору/вниз і подивись, як змінюється температура на різних висотах.</p>
+    
+    <div style="position:relative; height:300px; background:linear-gradient(to bottom, #87CEEB, #1E3A5F); border-radius:15px; overflow:hidden;">
+      <div id="sun" style="position:absolute; width:60px; height:60px; background:#FFD700; border-radius:50%; 
+          top:200px; left:50%; transform:translateX(-50%); cursor:grab; box-shadow:0 0 20px #FFA500;"></div>
+      
+      <div style="position:absolute; left:20%; bottom:30px; text-align:center; color:white;">
+        <div>0 м</div>
+        <div id="temp0">+20°C</div>
+      </div>
+      <div style="position:absolute; left:40%; bottom:100px; text-align:center; color:white;">
+        <div>1000 м</div>
+        <div id="temp1">+14°C</div>
+      </div>
+      <div style="position:absolute; left:60%; bottom:170px; text-align:center; color:white;">
+        <div>2000 м</div>
+        <div id="temp2">+8°C</div>
+      </div>
+      <div style="position:absolute; left:80%; bottom:240px; text-align:center; color:white;">
+        <div>3000 м</div>
+        <div id="temp3">+2°C</div>
+      </div>
+    </div>
+    
+    <p id="task1Status" style="margin-top:10px; color:var(--kid-green);"></p>
+  </div>
+
+  <!-- Завдання 2: Графік -->
+  <div class="task-card" id="task2Card">
+    <h3>📊 Завдання 2: Побудуй графік добового ходу температури</h3>
+    <p>Натисни кнопку, щоб автоматично побудувати графік на основі типових даних.</p>
+    <button id="buildGraphBtn" class="btn-primary">Побудувати графік</button>
+    <div id="graphResult" style="margin-top:15px; color:var(--kid-yellow);"></div>
+    <p id="task2Status" style="margin-top:10px; color:var(--kid-green);"></p>
+  </div>
+
+  <!-- Завдання 3: Аналіз погоди -->
+  <div class="task-card" id="task3Card">
+    <h3>🌦️ Завдання 3: Аналізуй погоду своєї місцевості</h3>
+    <p>Опиши, яка зараз погода у твоєму місті/селі, і отримай рекомендації щодо безпеки:</p>
+    <textarea id="weatherInput" placeholder="Наприклад: сонячно, +22°C, легкий вітер..." rows="3"></textarea>
+    <button id="submitWeather" class="btn-primary">Отримати рекомендації</button>
+    <div id="recommendations" style="margin-top:15px; background:rgba(0,255,255,0.1); padding:15px; border-radius:10px;"></div>
+    <p id="task3Status" style="margin-top:10px; color:var(--kid-green);"></p>
+  </div>
+
+  <!-- Завдання 4: Тест -->
+  <div class="quiz-game" id="task4Card">
+    <h2 style="color: var(--kid-pink); text-align: center; margin-bottom: 30px;">
+      <i class="fas fa-gamepad"></i> ПЕРЕВІР СЕБЕ: ТЕСТ-ГРА
+    </h2>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 1: Чому в горах холодніше, ніж на рівнині?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 1)">
+          <span class="answer-icon">A</span>
+          Повітря нагрівається від земної поверхні, а в горах поверхня далеко
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 1)">
+          <span class="answer-icon">B</span>
+          Там сильніший вітер
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 1)">
+          <span class="answer-icon">C</span>
+          Сонце там менше світить
+        </button>
+      </div>
+    </div>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 2: Коли вдень найвища температура?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 2)">
+          <span class="answer-icon">A</span>
+          О 14-15 годині (через 2-3 години після полудня)
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 2)">
+          <span class="answer-icon">B</span>
+          О 12:00 точно в полудень
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 2)">
+          <span class="answer-icon">C</span>
+          О 10:00 ранку
+        </button>
+      </div>
+    </div>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 3: Як правильно вимірювати температуру повітря?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 3)">
+          <span class="answer-icon">A</span>
+          Термометром у затінку, на висоті 2 метри
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 3)">
+          <span class="answer-icon">B</span>
+          На сонці, щоб швидше нагрілося
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 3)">
+          <span class="answer-icon">C</span>
+          Будь-де, головне — на висоті
+        </button>
+      </div>
+    </div>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 4: Що таке температурна амплітуда?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 4)">
+          <span class="answer-icon">A</span>
+          Середня температура за місяць
+        </button>
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 4)">
+          <span class="answer-icon">B</span>
+          Різниця між найвищою і найнижчою температурою
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 4)">
+          <span class="answer-icon">C</span>
+          Температура вночі
+        </button>
+      </div>
+    </div>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 5: Чому вночі температура знижується?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 5)">
+          <span class="answer-icon">A</span>
+          Земля віддає тепло, отримане вдень
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 5)">
+          <span class="answer-icon">B</span>
+          Сонце "вимикається"
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 5)">
+          <span class="answer-icon">C</span>
+          Вночі приходить холодний вітер
+        </button>
+      </div>
+    </div>
+    
+    <div class="question-card">
+      <h3 style="color: var(--kid-blue);">
+        <i class="fas fa-question-circle"></i> Запитання 6: Як називається прилад для вимірювання температури?
+      </h3>
+      <div class="answer-options">
+        <button class="answer-btn" data-correct="true" onclick="checkAnswer(this, 6)">
+          <span class="answer-icon">A</span>
+          Термометр
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 6)">
+          <span class="answer-icon">B</span>
+          Барометр
+        </button>
+        <button class="answer-btn" data-correct="false" onclick="checkAnswer(this, 6)">
+          <span class="answer-icon">C</span>
+          Анемометр
+        </button>
+      </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+      <button class="btn-primary" onclick="checkAllAnswers()" 
+              style="background: linear-gradient(145deg, var(--kid-pink), var(--kid-purple)); padding: 20px 40px; font-size: 22px;">
+        <i class="fas fa-check-double"></i> ПЕРЕВІРИТИ ВІДПОВІДІ
+      </button>
+      
+      <div id="quizResult" style="display: none; margin-top: 30px;">
+        <div class="message success" id="resultMessage"></div>
+      </div>
+    </div>
+    
+    <p id="task4Status" style="margin-top:20px; color:var(--kid-green); text-align:center;"></p>
+  </div>
+
+  <!-- Нагорода -->
+  <div class="reward-badge" id="rewardBadge">
+    <h2>🏆 Вітаємо!</h2>
+    <p>Ти отримав <span id="earnedPoints">12</span> балів!</p>
+    <p>Твій результат збережено.</p>
+    <a href="page2.html" class="btn-primary" style="margin-top:15px; display:inline-block;">Далі →</a>
+  </div>
+</div>
+
+<script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx1ok9gz_71vNK7NyDXlGrhkw4QcaDwBsggtJ_7eqE_XRZw_9PLiqPFn-SnpWx9yh3kFA/exec';
+let userData = {};
+let taskPoints = { task1: 0, task2: 0, task3: 0, task4: 0 };
+let userAnswers = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadUserData();
+  setupSunDrag();
+  setupGraphButton();
+  setupWeatherForm();
+  loadProgress();
+});
+
+function loadUserData() {
+  const saved = localStorage.getItem('atmosphereUser');
+  if (!saved) return window.location.href = 'index.html';
+  userData = JSON.parse(saved);
+  document.getElementById('userName').textContent = `Привіт, ${userData.name}!`;
+  document.getElementById('userClass').textContent = `${userData.class}`;
+  updatePointsDisplay();
+}
+
+function updatePointsDisplay() {
+  const total = Object.values(taskPoints).reduce((a, b) => a + b, 0);
+  document.getElementById('totalPoints').textContent = total;
+}
+
+function loadProgress() {
+  const progress = JSON.parse(localStorage.getItem('temperatureProgress6') || '{}');
+  taskPoints = { ...taskPoints, ...progress };
+  if (taskPoints.task1 > 0) markCompleted(1);
+  if (taskPoints.task2 > 0) markCompleted(2);
+  if (taskPoints.task3 > 0) markCompleted(3);
+  if (taskPoints.task4 > 0) markCompleted(4);
+}
+
+function markCompleted(taskNum) {
+  document.getElementById(`task${taskNum}Status`).textContent = '✅ Завершено (+3 бали)';
+  document.getElementById(`task${taskNum}Card`)?.classList.add('completed');
+}
+
+async function awardPoints(taskName, points) {
+  if (taskPoints[taskName] >= points) return;
+  taskPoints[taskName] = points;
+  localStorage.setItem('temperatureProgress6', JSON.stringify(taskPoints));
+  
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: userData.name,
+        class: userData.class,
+        theme: 'Температура',
+        points: points
+      })
+    });
+  } catch (e) {
+    console.warn('Не вдалося надіслати бали:', e);
+  }
+  
+  updatePointsDisplay();
+  if (Object.values(taskPoints).every(p => p > 0)) {
+    showReward(12);
+  }
+}
+
+// === ЗАВДАННЯ 1 ===
+function setupSunDrag() {
+  const sun = document.getElementById('sun');
+  let isDragging = false;
+
+  sun.addEventListener('mousedown', () => {
+    isDragging = true;
+    if (taskPoints.task1 === 0) {
+      awardPoints('task1', 3);
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const container = sun.parentElement;
+    const rect = container.getBoundingClientRect();
+    let y = e.clientY - rect.top;
+    y = Math.max(50, Math.min(y, rect.height - 50));
+    sun.style.top = y + 'px';
+    updateTemperatures(y, rect.height);
+  });
+
+  document.addEventListener('mouseup', () => isDragging = false);
+}
+
+function updateTemperatures(sunY, containerHeight) {
+  const baseTemp = 25 - (sunY / containerHeight) * 20;
+  [0, 1000, 2000, 3000].forEach((h, i) => {
+    const temp = Math.round(baseTemp - (h / 1000) * 6);
+    document.getElementById(`temp${i}`).textContent = `${temp > 0 ? '+' : ''}${temp}°C`;
+  });
+}
+
+// === ЗАВДАННЯ 2 ===
+function setupGraphButton() {
+  document.getElementById('buildGraphBtn').addEventListener('click', () => {
+    if (taskPoints.task2 > 0) return;
+    const data = [18, 22, 25, 28, 26, 23, 20, 17];
+    const avg = (data.reduce((a,b)=>a+b)/data.length).toFixed(1);
+    const amp = Math.max(...data) - Math.min(...data);
+    document.getElementById('graphResult').innerHTML = `
+      <p><b>Середня температура:</b> ${avg}°C</p>
+      <p><b>Амплітуда:</b> ${amp}°C</p>
+      <p>Графік побудовано! ✅</p>
+    `;
+    awardPoints('task2', 3);
+  });
+}
+
+// === ЗАВДАННЯ 3 ===
+function setupWeatherForm() {
+  document.getElementById('submitWeather').addEventListener('click', () => {
+    const input = document.getElementById('weatherInput').value.trim();
+    if (!input) return alert('Будь ласка, опиши погоду!');
+    if (taskPoints.task3 > 0) return;
+    
+    const recs = [
+      "✅ Удень — захищайся від сонця (кепка, окуляри).",
+      "✅ При грозі — не стій під деревом.",
+      "✅ При різких змінах температури — одягайся пошарово."
+    ].join('<br>');
+    
+    document.getElementById('recommendations').innerHTML = `<h4>Твої рекомендації:</h4>${recs}`;
+    awardPoints('task3', 3);
+  });
+}
+
+// === ЗАВДАННЯ 4: ТЕСТ ===
+function checkAnswer(button, questionNum) {
+  if (userAnswers[questionNum]) return;
+  
+  const isCorrect = button.dataset.correct === "true";
+  userAnswers[questionNum] = isCorrect;
+  
+  // Позначити відповіді
+  const options = button.closest('.question-card').querySelectorAll('.answer-btn');
+  options.forEach(opt => {
+    opt.disabled = true;
+    if (opt.dataset.correct === "true") {
+      opt.classList.add('correct');
+    } else if (opt === button && !isCorrect) {
+      opt.classList.add('wrong');
+    }
+  });
+}
+
+function checkAllAnswers() {
+  const totalQuestions = 6;
+  const correctCount = Object.values(userAnswers).filter(Boolean).length;
+  const points = Math.min(correctCount * 0.5, 3); // макс. 3 бали
+
+  let message = '';
+  if (correctCount === 6) message = 'ВІДМІННО! 🌟';
+  else if (correctCount >= 4) message = 'МОЛОДЕЦЬ! 👍';
+  else message = 'НЕПОГАНО! 💪';
+
+  document.getElementById('resultMessage').innerHTML = `
+    <div style="font-size:22px; color:var(--kid-green);">
+      ${message}<br>
+      <div style="font-size:18px; margin-top:10px;">
+        Правильних: ${correctCount} з ${totalQuestions}<br>
+        Балів: ${points.toFixed(1)}
+      </div>
+    </div>
+  `;
+  document.getElementById('quizResult').style.display = 'block';
+
+  if (taskPoints.task4 === 0) {
+    awardPoints('task4', points);
+    markCompleted(4);
+  }
+}
+
+function showReward(points) {
+  document.getElementById('earnedPoints').textContent = points;
+  document.getElementById('rewardBadge').style.display = 'block';
+}
+</script>
 </body>
 </html>
