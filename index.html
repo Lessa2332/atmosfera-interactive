@@ -359,6 +359,25 @@
         // ✅ ВИПРАВЛЕНО: URL БЕЗ ПРОБІЛІВ
         const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxWtK6u5r2TlE_xMNCoofxkBhjYZiUnLorEro1mZfHSWYQrPk277gIwFtGj9EkVrx0kBg/exec';
 
+        // ✅ ВИПРАВЛЕНО: Додаємо константи для кольорів
+        const THEME_COLORS = {
+            temperature: '#FF9500',    // orange
+            pressure: '#C77DFF',       // purple
+            wind: '#39FF14',           // lime
+            clouds: '#00FFFF',         // cyan
+            precipitation: '#0099FF',  // blue
+            layers: '#FF66CC',         // magenta
+            greenhouse: '#32CD32'      // green
+        };
+
+        const SCORE_COLORS = {
+            excellent: '#39FF14',  // lime
+            good: '#FFB800',       // orange
+            medium: '#00FFFF',     // cyan
+            low: '#C77DFF',        // purple
+            none: '#888888'        // gray
+        };
+
         let userData = JSON.parse(localStorage.getItem('atmosphereUser')) || {};
         let scores = userData.scores || { 
             temperature: 0, 
@@ -478,7 +497,7 @@
                 tbody.innerHTML += `
                     <tr style="background: rgba(57, 255, 20, 0.1); font-weight:900;">
                         <td style="text-align: left; padding-left: 20px;">🎯 Всього</td>
-                        <td style="color: var(--accent-lime);">${total}</td>
+                        <td style="color: #39FF14;">${total}</td>
                         <td></td>
                     </tr>
                 `;
@@ -528,7 +547,7 @@
             tbody.innerHTML += `
                 <tr style="background: rgba(57, 255, 20, 0.1); font-weight:900;">
                     <td style="text-align: left; padding-left: 20px;">🎯 Всього</td>
-                    <td style="color: var(--accent-lime);">${total}</td>
+                    <td style="color: #39FF14;">${total}</td>
                     <td></td>
                 </tr>
             `;
@@ -584,7 +603,7 @@
                                   (parseInt(row[5]) || 0) + (parseInt(row[6]) || 0) + (parseInt(row[7]) || 0) + (parseInt(row[8]) || 0);
                     const isCurrentUser = row[0] === userData.name && row[1] === userData.class;
                     tbody.innerHTML += `
-                        <tr ${isCurrentUser ? 'style="background: rgba(0, 255, 255, 0.1); border-left: 4px solid var(--accent-cyan);"' : ''}>
+                        <tr ${isCurrentUser ? 'style="background: rgba(0, 255, 255, 0.1); border-left: 4px solid #00FFFF;"' : ''}>
                             <td style="font-weight: bold; font-size: 20px;">${medal}</td>
                             <td>${isCurrentUser ? '👉 ' : ''}${row[0]}</td>
                             <td>${row[1]}</td>
@@ -594,7 +613,7 @@
                             <td>${row[5] || 0}</td>
                             <td>${row[6] || 0}</td>
                             <td>${row[7] || 0}</td>
-                            <td style="color: var(--accent-lime); font-weight: 900; font-size: 18px;">${total}</td>
+                            <td style="color: #39FF14; font-weight: 900; font-size: 18px;">${total}</td>
                         </tr>
                     `;
                 });
@@ -617,24 +636,15 @@
         }
 
         function getThemeColor(themeKey) {
-            const colors = {
-                temperature: var(--accent-orange),
-                pressure: var(--accent-purple),
-                wind: var(--accent-lime),
-                clouds: var(--accent-cyan),
-                precipitation: '#0099FF',
-                layers: '#FF66CC',
-                greenhouse: '#32CD32'
-            };
-            return colors[themeKey] || '#FFFFFF';
+            return THEME_COLORS[themeKey] || '#FFFFFF';
         }
 
         function getScoreColor(score) {
-            if (score >= 40) return var(--accent-lime);
-            if (score >= 25) return '#FFB800';
-            if (score >= 10) return var(--accent-cyan);
-            if (score > 0) return '#C77DFF';
-            return '#888888';
+            if (score >= 40) return SCORE_COLORS.excellent; // #39FF14
+            if (score >= 25) return SCORE_COLORS.good;      // #FFB800
+            if (score >= 10) return SCORE_COLORS.medium;    // #00FFFF
+            if (score > 0) return SCORE_COLORS.low;         // #C77DFF
+            return SCORE_COLORS.none;                       // #888888
         }
 
         if (userData.name) {
@@ -651,4 +661,3 @@
     </script>
 </body>
 </html>
-
