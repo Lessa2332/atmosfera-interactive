@@ -1,6 +1,6 @@
-<// Конфігурація гри
+// Конфігурація гри
 const GAME_CONFIG = {
-    apiUrl: 'https://script.google.com/macros/s/AKfycbwSQ8InOBf-kE0uDc26UZD6Ftp6_EKHSfo3YzZbq9nfY2f0ssSVx4fOz41IOmPnap-2JA/exec', // Замініть на ваш URL
+    apiUrl: 'ВАШ_GOOGLE_APPS_SCRIPT_URL', // Замініть на ваш URL
     levels: [
         { id: 1, title: "Температура повітря", emoji: "🌡️", theme: "Температура", color: "#FF9500" },
         { id: 2, title: "Атмосферний тиск", emoji: "📉", theme: "Тиск", color: "#00FFFF" },
