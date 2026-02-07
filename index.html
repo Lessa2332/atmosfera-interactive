@@ -316,14 +316,14 @@
             <h2 class="welcome-title">Вітаємо в Атмосфері!</h2>
             <p class="welcome-text">
                 Привіт! Це інтерактивна платформа для вивчення атмосфери Землі.<br>
-                Введи своє ім'я, щоб ми могли запам'ятати твій прогрес:
+                Введи своє ім'я та прізвище, щоб ми могли запам'ятати твій прогрес:
             </p>
             
             <input type="text" 
                    id="username-input" 
                    class="name-input" 
-                   placeholder="Наприклад: Анна або Максим" 
-                   maxlength="20"
+                   placeholder="Наприклад: Анна Іваненко" 
+                   maxlength="30"
                    autocomplete="off">
             
             <div class="welcome-buttons">
@@ -460,7 +460,7 @@
                     <div class="topic-card">
                         <div class="topic-icon">🧭</div>
                         <h3 class="topic-title">Погода та клімат</h3>
-                        <p class="topic-description">Прогноз погоди, кліматичні пояси, вплив людини на клімат.</p>
+                        <p class="topic-description">Прогноз погоди, кліматичні пояси, вплив людина на клімат.</p>
                         <div class="topic-buttons">
                             <a href="page7.html" class="btn-primary">
                                 <i class="fas fa-book"></i> Теорія
@@ -476,14 +476,18 @@
 
         <!-- Футер -->
         <footer style="text-align: center; padding: 20px; margin-top: 30px; border-top: 1px solid var(--glass-border); opacity: 0.8; font-size: 14px;">
-            <p>© 2025 Атмосфера: Інтерактивне навчання.Розроблено Олесею Бохонок для учнів 6 класу.</p>
+            <p>© 2025 Атмосфера: Інтерактивне навчання. Розроблено Олесею Бохонок для учнів 6 класу.</p>
         </footer>
     </div>
 
     <script>
         // Основний код для управління профілем та прогресом
         document.addEventListener('DOMContentLoaded', function() {
-            const username = localStorage.getItem('atmosfera_username');
+            // Синхронізуємо старі дані з новими
+            syncUserData();
+            
+            // Перевіряємо, чи є ім'я
+            const username = localStorage.getItem('playerName') || localStorage.getItem('atmosfera_username');
             const welcomeModal = document.getElementById('welcome-modal');
             const mainContent = document.getElementById('main-content');
             
@@ -523,23 +527,61 @@
             }
         });
         
+        // Функція для синхронізації даних з гри
+        function syncUserData() {
+            // Синхронізуємо ім'я
+            const oldUsername = localStorage.getItem('atmosfera_username');
+            const newUsername = localStorage.getItem('playerName');
+            
+            if (oldUsername && !newUsername) {
+                localStorage.setItem('playerName', oldUsername);
+            } else if (newUsername && !oldUsername) {
+                localStorage.setItem('atmosfera_username', newUsername);
+            }
+            
+            // Синхронізуємо прогрес уроків
+            const oldCompleted = localStorage.getItem('completed_lessons');
+            const newCompleted = localStorage.getItem('completedLevels');
+            
+            if (oldCompleted && !newCompleted) {
+                localStorage.setItem('completedLevels', oldCompleted);
+            } else if (newCompleted && !oldCompleted) {
+                localStorage.setItem('completed_lessons', newCompleted);
+            }
+            
+            // Синхронізуємо бали
+            const oldScores = localStorage.getItem('game_scores');
+            const newScores = localStorage.getItem('levelScores');
+            
+            if (oldScores && !newScores) {
+                localStorage.setItem('levelScores', oldScores);
+            } else if (newScores && !oldScores) {
+                localStorage.setItem('game_scores', newScores);
+            }
+        }
+        
         function saveUsername() {
             const nameInput = document.getElementById('username-input');
             const username = nameInput.value.trim();
-if (username.length < 2) {
-    alert("Будь ласка, введи своє ім'я та прізвище (мінімум 2 літери)");
-    nameInput.focus();
-    return;
-}
             
-            // Зберігаємо ім'я в localStorage
+            if (username.length < 2) {
+                alert("Будь ласка, введи своє ім'я та прізвище (мінімум 2 літери)");
+                nameInput.focus();
+                return;
+            }
+            
+            // Зберігаємо ім'я в обох ключах для сумісності
+            localStorage.setItem('playerName', username);
             localStorage.setItem('atmosfera_username', username);
             
-            // Ініціалізуємо прогрес, якщо ще не ініціалізовано
-            if (!localStorage.getItem('completed_lessons')) {
+            // Ініціалізуємо прогрес в обох форматах для сумісності
+            if (!localStorage.getItem('completedLevels')) {
+                localStorage.setItem('completedLevels', JSON.stringify([]));
                 localStorage.setItem('completed_lessons', JSON.stringify([]));
             }
-            if (!localStorage.getItem('game_scores')) {
+            
+            if (!localStorage.getItem('levelScores')) {
+                localStorage.setItem('levelScores', JSON.stringify({}));
                 localStorage.setItem('game_scores', JSON.stringify({}));
             }
             
@@ -585,30 +627,48 @@ if (username.length < 2) {
         }
         
         function updateProgress() {
-            // Отримуємо дані про прогрес з localStorage
-            const completedLessons = JSON.parse(localStorage.getItem('completed_lessons') || '[]');
-            const gameScores = JSON.parse(localStorage.getItem('game_scores') || '{}');
+            // Синхронізуємо дані перед оновленням
+            syncUserData();
+            
+            // Отримуємо дані про прогрес з localStorage (переважно з гри)
+            const completedLevels = JSON.parse(localStorage.getItem('completedLevels') || '[]');
+            const levelScores = JSON.parse(localStorage.getItem('levelScores') || '{}');
             
             // Оновлюємо кількість вивчених тем
-            document.getElementById('completed-lessons').textContent = completedLessons.length;
-            document.getElementById('progress-display').textContent = `${completedLessons.length}/6`;
+            document.getElementById('completed-lessons').textContent = completedLevels.length;
+            document.getElementById('progress-display').textContent = `${completedLevels.length}/6`;
             
             // Обчислюємо загальні бали з гри
             let totalScore = 0;
             let totalCrystals = 0;
             
-            Object.values(gameScores).forEach(score => {
-                totalScore += score.score || 0;
-                // Кристали: 1 кристал за кожні 10 балів
-                totalCrystals += Math.floor((score.score || 0) / 10);
+            // Обробляємо різні формати даних
+            Object.values(levelScores).forEach(score => {
+                if (typeof score === 'object' && score !== null) {
+                    // Формат з гри: {score: число}
+                    totalScore += score.score || 0;
+                    totalCrystals += Math.floor((score.score || 0) / 10);
+                } else {
+                    // Простий формат: число
+                    totalScore += score || 0;
+                    totalCrystals += Math.floor((score || 0) / 10);
+                }
             });
             
             document.getElementById('total-score').textContent = totalScore;
             document.getElementById('crystals-earned').textContent = totalCrystals;
+            
+            // Оновлюємо ім'я в профілі
+            const username = localStorage.getItem('playerName') || localStorage.getItem('atmosfera_username');
+            if (username) {
+                document.getElementById('current-username').textContent = username;
+            }
         }
         
         function changeUsername() {
-            if (confirm('Хочеш змінити своє ім\'я?')) {
+            if (confirm("Хочеш змінити своє ім'я?")) {
+                // Очищаємо обидва ключі
+                localStorage.removeItem('playerName');
                 localStorage.removeItem('atmosfera_username');
                 location.reload();
             }
@@ -616,12 +676,14 @@ if (username.length < 2) {
         
         // Перевіряємо, чи була завершена тема при поверненні на головну
         window.addEventListener('pageshow', function() {
-            const username = localStorage.getItem('atmosfera_username');
+            const username = localStorage.getItem('playerName') || localStorage.getItem('atmosfera_username');
             if (username) {
                 updateProgress();
             }
         });
+        
+        // Додаємо функцію для оновлення прогресу з інших сторінок
+        window.updateMainProgress = updateProgress;
     </script>
 </body>
 </html>
-
