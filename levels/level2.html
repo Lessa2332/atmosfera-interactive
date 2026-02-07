@@ -2,283 +2,435 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="AR-сцена з планетою для дітей">
-    <title>🌍«Світ на долоні » 🎈</title>
-
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рівень 5: Атмосферні опади</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: transparent;
-        }
-        
-        a-scene {
-            width: 100% !important;
-            height: 100% !important;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: transparent;
-        }
-
-        .arjs-loader {
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: rgba(135, 206, 235, 0.2);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #FF4500;
-            font-size: 1.8em;
-            text-align: center;
+        .game-container {
+            max-width: 900px;
+            margin: 20px auto;
             padding: 20px;
-            box-sizing: border-box;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .wheel-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 30px auto;
         }
 
-        .pulse { animation: pulse 1.5s infinite; }
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #FF9500 0% 20%,   /* Дощ */
+                #00FFFF 20% 40%,  /* Сніг */
+                #FF4081 40% 60%,  /* Град */
+                #C77DFF 60% 80%,  /* Іній */
+                #39FF14 80% 100%  /* Роса */
+            );
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+        }
 
-        .controls {
+        .wheel-arrow {
             position: absolute;
-            bottom: 20px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10000;
+            font-size: 60px;
+            z-index: 10;
+        }
+
+        .wheel-labels {
+            position: absolute;
+            inset: 0;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            pointer-events: none;
+            font-size: 28px;
         }
 
-        .sound-btn, .youtube-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 15px;
+        .current-precipitation {
+            font-size: 100px;
+            margin: 30px 0;
+            min-height: 120px;
+        }
+
+        .reaction-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            margin: 30px auto;
+        }
+
+        .reaction-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--glass-border);
+            padding: 25px;
+            border-radius: 20px;
+            font-size: 60px;
             cursor: pointer;
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
-            font-size: 1em;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
+            transition: all 0.3s;
         }
 
-        .sound-btn { background-color: #4CAF50; color: white; }
-        .sound-btn.off { background-color: #f44336; }
-        .youtube-btn { background-color: #FF9800; color: white; }
-        .youtube-btn:hover { background-color: #FFB300; }
+        .reaction-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .reaction-btn.correct {
+            background: rgba(57, 255, 20, 0.4);
+            border-color: var(--accent-lime);
+        }
+
+        .reaction-btn.incorrect {
+            background: rgba(255, 0, 0, 0.4);
+            border-color: #FF0000;
+        }
+
+        .timer-bar {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .timer-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent-lime), var(--accent-cyan));
+            transition: width 0.1s linear;
+        }
+
+        .quiz-stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--accent-cyan);
+        }
+
+        #spin-btn {
+            padding: 18px 50px;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        .result-screen {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .result-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--accent-cyan);
+        }
     </style>
 </head>
 <body>
-    <div class="arjs-loader" id="loader">
-        <div class="pulse">🌍 Світ на долоні 🎈</div>
-        <div style="margin-top: 20px; font-size: 1.2em;">Наведи камеру на маркер! 😊🎨</div>
-    </div>
+    <header class="game-header">
+        <div class="header-left">
+            <a href="../game.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="player-info">
+                <div class="username">🌧️ Атмосферні опади</div>
+                <div class="player-class">Рівень 5</div>
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat-item">
+                <i class="fas fa-gamepad"></i>
+                <span id="round-display">0/10</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-trophy"></i>
+                <span id="score-display">0</span>
+            </div>
+        </div>
+    </header>
 
-    <a-scene
-        mindar-image="imageTargetSrc: ./my-marker.mind;"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false"
-        loading-screen="enabled: false"
-        embedded
-        renderer="colorManagement: true; physicallyCorrectLights: true;"
-        touch-gestures
-    >
-        <a-assets>
-            <audio id="bg-music" src="./bg-music.mp3" preload="auto" loop></audio>
-            <img id="earth-texture" src="./earth.jpg">
-        </a-assets>
+    <main class="game-container">
+        <div class="quiz-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="current-round">1</div>
+                <div class="stat-label">раунд</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="correct-count">0</div>
+                <div class="stat-label">вдалі реакції</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-score">0</div>
+                <div class="stat-label">балів</div>
+            </div>
+        </div>
 
-        <a-camera
-            id="camera"
-            position="0 0 1.5"
-            look-controls="enabled: false"
-        ></a-camera>
+        <!-- Рулетка -->
+        <div class="wheel-container">
+            <div class="wheel-arrow">▼</div>
+            <div id="wheel"></div>
+            <div class="wheel-labels">
+                <div>🌧️</div>
+                <div>❄️</div>
+                <div>🧊</div>
+                <div>🌫️</div>
+                <div>💧</div>
+            </div>
+        </div>
 
-        <a-entity mindar-image-target="targetIndex: 0">
-            <a-sphere
-                id="hand-planet"
-                position="0 0 -0.5"
-                radius="0.4"
-                src="#earth-texture"
-                visible="false"
-                material="opacity: 1; transparent: false"
-            >
-                <a-animation
-                    attribute="rotation"
-                    to="0 360 0"
-                    dur="5000"
-                    repeat="indefinite"
-                ></a-animation>
-            </a-sphere>
-        </a-entity>
-    </a-scene>
+        <button class="btn-primary" id="spin-btn">Крутити рулетку! 🎰</button>
 
-    <div class="controls">
-        <button id="sound-btn" class="sound-btn">Увімкнути звук</button>
-        <a href="https://www.youtube.com/playlist?list=PL6UDFwT9TzFw5K8Tzu_OgsDz7vV3N9eY-" target="_blank" class="youtube-btn">YouTube SmartLessa</a>
-    </div>
+        <!-- Поточний опад -->
+        <div class="current-precipitation" id="current-precipitation"></div>
+
+        <!-- Таймер реакції -->
+        <div class="timer-bar" id="reaction-timer" style="display: none;">
+            <div class="timer-fill" id="timer-fill"></div>
+        </div>
+
+        <!-- Кнопки реакції -->
+        <div class="reaction-buttons" id="reaction-buttons" style="display: none;">
+            <button class="reaction-btn" data-reaction="umbrella">☔</button>
+            <button class="reaction-btn" data-reaction="jacket">🧥</button>
+            <button class="reaction-btn" data-reaction="house">🏠</button>
+            <button class="reaction-btn" data-reaction="gloves">🧤</button>
+        </div>
+
+        <!-- Екран результатів -->
+        <div id="result-screen" class="result-screen">
+            <div class="result-emoji" id="result-emoji">🎉</div>
+            <h2 id="result-title">Вітаємо!</h2>
+            <p id="result-message">Ви завершили рівень!</p>
+            <div class="result-score" id="final-score">0 балів</div>
+            <p>Зірок отримано: <span id="stars-earned">0/3</span></p>
+
+            <div style="margin-top: 40px;">
+                <button class="btn-primary" onclick="finishLevel()" style="padding: 15px 40px; font-size: 20px;">
+                    <i class="fas fa-trophy"></i> Завершити рівень
+                </button>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // Адаптивність для повного екрану
-        function fixHeight() { 
-            document.body.style.height = window.innerHeight + 'px'; 
-        }
-        fixHeight();
-        window.addEventListener('resize', fixHeight);
+        // ============ ДАНІ ОПАДІВ ============
+        const precipitations = [
+            { name: "Дощ", emoji: "🌧️", correct: "umbrella" },      // ☔
+            { name: "Сніг", emoji: "❄️", correct: "jacket" },       // 🧥
+            { name: "Град", emoji: "🧊", correct: "house" },         // 🏠
+            { name: "Іній", emoji: "🌫️", correct: "gloves" },       // 🧤
+            { name: "Роса", emoji: "💧", correct: "none" }          // немає захисту, просто радіти (додамо фейкову кнопку або автоматично)
+        ];
 
-        // Посилання на елементи
-        const loader = document.querySelector('#loader');
-        const targetEntity = document.querySelector('[mindar-image-target]');
-        const planet = document.querySelector('#hand-planet');
-        const bgMusic = document.querySelector('#bg-music');
-        const soundBtn = document.querySelector('#sound-btn');
+        // Для роси — спеціальна логіка: будь-яка кнопка або автоматично +бали
+        // Зробимо: якщо роса — автоматично +10 балів без вибору (сюрприз!)
 
-        // Перевірка завантаження текстури
-        const earthTexture = document.querySelector('#earth-texture');
-        if (earthTexture) {
-            earthTexture.addEventListener('load', () => {
-                console.log('Текстура earth.jpg успішно завантажена');
-            });
-            earthTexture.addEventListener('error', () => {
-                console.error('Помилка завантаження текстури earth.jpg');
-            });
-        }
+        // ============ ЗМІННІ ============
+        let currentRound = 0;
+        let score = 0;
+        let correctReactions = 0;
+        const totalRounds = 10;
+        let currentPrecipitation = null;
+        let reactionTimeLeft = 0;
+        let reactionInterval;
 
-        // Логіка відстеження маркера
-        if (targetEntity) {
-            targetEntity.addEventListener('targetFound', () => {
-                console.log("🎯 Маркер знайдено! Планета з'явилася.");
-                loader.style.display = 'none';
-                if (planet) {
-                    planet.setAttribute('visible', 'true');
-                    console.log("Планета видима:", planet.getAttribute('visible'));
-                    planet.components.animation.pause();
-                }
-                if (bgMusic && bgMusic.paused) {
-                    bgMusic.play().catch(e => console.log("🔇 Помилка відтворення музики:", e));
-                    soundBtn.classList.remove('off');
-                    soundBtn.textContent = 'Вимкнути звук';
-                }
-            });
-
-            targetEntity.addEventListener('targetLost', () => {
-                console.log("ℹ️ Маркер втрачено.");
-                if (planet) {
-                    planet.setAttribute('visible', 'false');
-                    console.log("Планета невидима:", planet.getAttribute('visible'));
-                    planet.components.animation.play();
-                }
-                if (bgMusic && !bgMusic.paused) bgMusic.pause();
-                loader.style.display = 'flex';
-                loader.querySelector('.pulse').textContent = '🌍 Світ на долоні 🎈';
-                loader.querySelector('div[style]').textContent = 'Наведи камеру на маркер! 😊🎨';
-            });
-        } else {
-            console.error('Елемент mindar-image-target не знайдено!');
+        // ============ ІНІЦІАЛІЗАЦІЯ ============
+        function initGame() {
+            updateStats();
+            document.getElementById('spin-btn').addEventListener('click', spinWheel);
         }
 
-        // Обробка кнопки звуку
-        soundBtn.addEventListener('click', () => {
-            if (bgMusic.paused) {
-                bgMusic.play().catch(e => console.log("🔇 Помилка відтворення музики:", e));
-                soundBtn.classList.remove('off');
-                soundBtn.textContent = 'Вимкнути звук';
+        // ============ КРУТИТИ КОЛЕСО ============
+        function spinWheel() {
+            if (currentRound >= totalRounds) return;
+
+            const wheel = document.getElementById('wheel');
+            const randomDegrees = Math.floor(Math.random() * 3600) + 720; // 2-10 обертів
+            wheel.style.transform = `rotate(${randomDegrees}deg)`;
+
+            setTimeout(() => {
+                // Визначаємо сектор (360° / 5 = 72° на сектор)
+                let rotation = randomDegrees % 360;
+                let sector = Math.floor((360 - rotation + 36) / 72) % 5; // +36 для центру стрілки
+                currentPrecipitation = precipitations[sector];
+
+                showPrecipitation();
+            }, 4200);
+        }
+
+        // ============ ПОКАЗАТИ ОПАД ============
+        function showPrecipitation() {
+            currentRound++;
+            updateStats();
+
+            document.getElementById('current-precipitation').textContent = currentPrecipitation.emoji;
+
+            if (currentPrecipitation.name === "Роса") {
+                // Сюрприз — автоматично вдала реакція
+                setTimeout(() => {
+                    score += 20; // бонус за сюрприз
+                    correctReactions++;
+                    updateStats();
+                    showMessage('Роса! Приємний ранок 🌸 +20 балів!', 'success');
+                    nextRound();
+                }, 2000);
+                return;
+            }
+
+            // Звичайна реакція
+            document.getElementById('reaction-buttons').style.display = 'grid';
+            document.getElementById('reaction-timer').style.display = 'block';
+            document.getElementById('timer-fill').style.width = '100%';
+
+            reactionTimeLeft = 50; // 5 секунд (50 * 100ms)
+            reactionInterval = setInterval(updateReactionTimer, 100);
+
+            // Слухачі на кнопки
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.onclick = () => checkReaction(btn.dataset.reaction);
+            });
+        }
+
+        // ============ ТАЙМЕР РЕАКЦІЇ ============
+        function updateReactionTimer() {
+            reactionTimeLeft--;
+            document.getElementById('timer-fill').style.width = (reactionTimeLeft / 50 * 100) + '%';
+
+            if (reactionTimeLeft <= 0) {
+                clearInterval(reactionInterval);
+                checkReaction(null); // не встиг
+            }
+        }
+
+        // ============ ПЕРЕВІРКА РЕАКЦІЇ ============
+        function checkReaction(chosen) {
+            clearInterval(reactionInterval);
+            document.getElementById('reaction-buttons').style.display = 'none';
+            document.getElementById('reaction-timer').style.display = 'none';
+
+            const isCorrect = chosen === currentPrecipitation.correct;
+
+            if (isCorrect) {
+                score += 15 + Math.floor(reactionTimeLeft / 5); // бонус за швидкість
+                correctReactions++;
+                showMessage('Вдало! Ти в безпеці 😎', 'success');
+                document.querySelector(`.reaction-btn[data-reaction="${chosen}"]`).classList.add('correct');
             } else {
-                bgMusic.pause();
-                soundBtn.classList.add('off');
-                soundBtn.textContent = 'Увімкнути звук';
-            }
-        });
-
-        // Компонент для обробки сенсорних жестів
-        AFRAME.registerComponent('touch-gestures', {
-            schema: {
-                minScale: { type: 'number', default: 0.2 },
-                maxScale: { type: 'number', default: 3.0 },
-                rotationSpeed: { type: 'number', default: 2.0 }
-            },
-            init: function () {
-                this.isRotating = false;
-                this.isPinching = false;
-                this.startPos = { x: 0, y: 0 };
-                this.currentScale = 1;
-                this.planet = document.querySelector('#hand-planet');
-
-                if (!this.planet) {
-                    console.error('Планета не знайдена в компоненті touch-gestures');
-                    return;
+                showMessage(chosen === null ? 'Не встиг! 😅' : 'Ні, це не допоможе! 🙈', 'info');
+                if (chosen) {
+                    document.querySelector(`.reaction-btn[data-reaction="${chosen}"]`).classList.add('incorrect');
                 }
-
-                console.log('Компонент touch-gestures ініціалізовано');
-
-                this.el.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    console.log('touchstart triggered, touches:', e.touches.length);
-                    if (e.touches.length === 1) {
-                        this.isRotating = true;
-                        this.startPos.x = e.touches[0].pageX;
-                        this.startPos.y = e.touches[0].pageY;
-                        console.log('Початок обертання, позиція:', this.startPos);
-                    } else if (e.touches.length === 2) {
-                        this.isPinching = true;
-                        this.isRotating = false;
-                        this.initialDistance = Math.hypot(
-                            e.touches[0].pageX - e.touches[1].pageX,
-                            e.touches[0].pageY - e.touches[1].pageY
-                        );
-                        this.currentScale = this.planet.object3D.scale.x;
-                        console.log('Початок масштабування, відстань:', this.initialDistance);
-                    }
-                });
-
-                this.el.addEventListener('touchmove', (e) => {
-                    e.preventDefault();
-                    console.log('touchmove triggered, touches:', e.touches.length);
-                    if (this.isPinching && e.touches.length === 2) {
-                        const currentDistance = Math.hypot(
-                            e.touches[0].pageX - e.touches[1].pageX,
-                            e.touches[0].pageY - e.touches[1].pageY
-                        );
-                        const scaleFactor = currentDistance / this.initialDistance;
-                        const newScale = Math.max(this.data.minScale, Math.min(this.data.maxScale, this.currentScale * scaleFactor));
-                        this.planet.object3D.scale.set(newScale, newScale, newScale);
-                        console.log('Масштабування, новий масштаб:', newScale);
-                    } else if (this.isRotating && e.touches.length === 1) {
-                        const deltaX = (e.touches[0].pageX - this.startPos.x) * this.data.rotationSpeed;
-                        const deltaY = (e.touches[0].pageY - this.startPos.y) * this.data.rotationSpeed;
-                        this.planet.object3D.rotation.y += THREE.MathUtils.degToRad(deltaX);
-                        this.planet.object3D.rotation.x += THREE.MathUtils.degToRad(deltaY);
-                        this.startPos.x = e.touches[0].pageX;
-                        this.startPos.y = e.touches[0].pageY;
-                        console.log('Обертання, deltaX:', deltaX, 'deltaY:', deltaY);
-                    }
-                });
-
-                this.el.addEventListener('touchend', () => {
-                    console.log('touchend triggered');
-                    this.isRotating = false;
-                    this.isPinching = false;
-                });
             }
-        });
+
+            updateStats();
+            setTimeout(nextRound, 2500);
+        }
+
+        // ============ НАСТУПНИЙ РАУНД ============
+        function nextRound() {
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.classList.remove('correct', 'incorrect');
+            });
+
+            document.getElementById('current-precipitation').textContent = '';
+
+            if (currentRound >= totalRounds) {
+                finishGame();
+            } else {
+                document.getElementById('spin-btn').disabled = false;
+            }
+        }
+
+        // ============ ОНОВЛЕННЯ СТАТИСТИКИ ============
+        function updateStats() {
+            document.getElementById('current-round').textContent = currentRound + 1;
+            document.getElementById('round-display').textContent = `${currentRound}/${totalRounds}`;
+            document.getElementById('correct-count').textContent = correctReactions;
+            document.getElementById('total-score').textContent = score;
+            document.getElementById('score-display').textContent = score;
+        }
+
+        // ============ ЗАВЕРШЕННЯ ГРИ ============
+        function finishGame() {
+            document.getElementById('spin-btn').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            const percentage = (correctReactions / totalRounds) * 100;
+            let stars = 0;
+            let emoji = '😢';
+            let title = 'Можна краще!';
+            let message = 'Спробуй ще раз!';
+
+            if (percentage >= 90) {
+                stars = 3;
+                emoji = '🏆';
+                title = 'Супер!';
+                message = 'Ти майстер опадів!';
+            } else if (percentage >= 70) {
+                stars = 2;
+                emoji = '🎉';
+                title = 'Чудово!';
+                message = 'Ти добре реагуєш!';
+            } else if (percentage >= 50) {
+                stars = 1;
+                emoji = '👍';
+                title = 'Непогано!';
+                message = 'Ти вже багато знаєш!';
+            }
+
+            document.getElementById('result-emoji').textContent = emoji;
+            document.getElementById('result-title').textContent = title;
+            document.getElementById('result-message').textContent = message;
+            document.getElementById('final-score').textContent = `${score} балів`;
+            document.getElementById('stars-earned').textContent = `${stars}/3`;
+
+            saveResults(score, stars);
+        }
+
+        // ============ ЗБЕРЕЖЕННЯ ============
+        function saveResults(finalScore, stars) {
+            localStorage.setItem('level5_score', finalScore);
+            localStorage.setItem('level5_stars', stars);
+            localStorage.setItem('level5_completed', 'true');
+        }
+
+        // ============ ЗАВЕРШЕННЯ РІВНЯ ============
+        function finishLevel() {
+            const score = parseInt(localStorage.getItem('level5_score')) || 0;
+            const stars = parseInt(localStorage.getItem('level5_stars')) || 0;
+            window.location.href = `../game.html?level=5&score=${score}&stars=${stars}`;
+        }
+
+        // ============ ПОВІДОМЛЕННЯ ============
+        function showMessage(text, type) {
+            alert(text); // можна замінити на красивий toast пізніше
+        }
+
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
-</html>
-
 </html>
