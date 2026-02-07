@@ -19,6 +19,7 @@
             font-weight: bold;
             margin: 5px 0;
             font-size: 14px;
+            color: var(--accent-cyan);
         }
         
         .lb-class {
@@ -48,6 +49,7 @@
             max-width: 400px;
             width: 100%;
             border: 2px solid var(--accent-cyan);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
         }
         
         .input-field {
@@ -59,6 +61,31 @@
             border-radius: 10px;
             color: white;
             font-size: 16px;
+        }
+        
+        #message {
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 900;
+            z-index: 3000;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+            animation: slideDown 0.5s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -100%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
         }
     </style>
 </head>
@@ -171,7 +198,7 @@
     </div>
 
     <!-- Повідомлення -->
-    <div id="message" style="display: none; position: fixed; top: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #39FF14, #00cc00); color: black; padding: 15px 25px; border-radius: 50px; font-weight: 900; z-index: 3000;"></div>
+    <div id="message"></div>
 
     <script>
         // ============ КОНФІГУРАЦІЯ ГРИ ============
@@ -243,6 +270,19 @@
         // ============ ІНІЦІАЛІЗАЦІЯ ГРИ ============
         function initGame() {
             console.log('🚀 Ініціалізація гри...');
+            
+            // Перевіряємо URL параметри (якщо повернулися з рівня)
+            const urlParams = new URLSearchParams(window.location.search);
+            const levelId = urlParams.get('level');
+            const score = urlParams.get('score');
+            const stars = urlParams.get('stars');
+            
+            if (levelId && score && stars) {
+                saveLevelResults(parseInt(levelId), parseInt(score), parseInt(stars));
+                // Видаляємо параметри з URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
             updatePlayerDisplay();
             renderLevels();
             loadLeaderboard();
@@ -317,20 +357,8 @@
             const level = GAME_CONFIG.levels.find(l => l.id === levelId);
             if (!level) return;
             
-            showMessage(`Завантаження: ${level.title}...`, 'info');
-            
-            // Симуляція гри
-            setTimeout(() => {
-                // Випадкові результати для тесту
-                const score = Math.floor(Math.random() * 500) + 100;
-                const stars = Math.floor(Math.random() * 3) + 1;
-                
-                // Зберігаємо результати
-                saveLevelResults(levelId, score, stars);
-                
-                // Показуємо результат
-                showMessage(`Рівень завершено! +${score} балів ⭐${stars}/3`, 'success');
-            }, 1500);
+            // Перехід на сторінку рівня
+            window.location.href = `levels/level${levelId}.html`;
         }
 
         // ============ ЗБЕРЕЖЕННЯ РЕЗУЛЬТАТІВ ============
@@ -356,6 +384,9 @@
             // Оновлюємо відображення
             updatePlayerDisplay();
             renderLevels();
+            
+            // Показуємо результат
+            showMessage(`Рівень завершено! +${score} балів ⭐${stars}/3 +${crystalsEarned}💎`, 'success');
         }
 
         function savePlayerData() {
@@ -375,7 +406,6 @@
                 
                 if (data.status === 'success' && data.leaderboard) {
                     renderLeaderboard(data.leaderboard);
-                    showMessage('Лідерборд оновлено!', 'success');
                 } else {
                     showDemoLeaderboard();
                 }
@@ -440,6 +470,7 @@
                 
                 await fetch(GAME_CONFIG.apiUrl, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(playerData)
                 });
