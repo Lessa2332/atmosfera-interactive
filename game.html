@@ -44,6 +44,94 @@
             font-weight: 900;
             color: var(--accent-cyan);
         }
+        
+        /* Стилі для лідерборду з правильним ранжуванням */
+        .leaderboard-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .leaderboard-row:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .lb-rank {
+            font-weight: 900;
+            font-size: 18px;
+            min-width: 40px;
+            color: var(--accent-cyan);
+        }
+        
+        .lb-medal {
+            min-width: 30px;
+            font-size: 20px;
+        }
+        
+        .lb-name {
+            flex: 1;
+            font-weight: 600;
+        }
+        
+        .lb-class {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-left: 5px;
+        }
+        
+        .lb-score {
+            font-weight: 900;
+            color: var(--accent-lime);
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        /* Стилі для поточного гравця */
+        .lb-you {
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), rgba(57, 255, 20, 0.05));
+            border-left: 3px solid var(--accent-lime);
+            border-radius: 0 10px 10px 0;
+        }
+        
+        /* Стилі для однакових балів */
+        .lb-tie .lb-rank {
+            opacity: 0.7;
+            font-size: 16px;
+        }
+        
+        .lb-tie .lb-score {
+            color: #FF9500; /* Оранжевий для виділення */
+        }
+        
+        /* Інші стилі */
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .btn-refresh:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent-cyan);
+        }
     </style>
 </head>
 <body>
@@ -107,7 +195,7 @@
                     <!-- Лідерборд буде завантажуватися -->
                 </div>
                 <button class="btn-refresh" onclick="loadLeaderboard()">
-                    <i class="fas fa-sync-alt"></i> Оновити
+                    <i class="fas fa-sync-alt"></i> Оновити таблицю
                 </button>
             </div>
         </section>
@@ -138,8 +226,8 @@
         <div class="modal-content">
             <h3>Твій профіль</h3>
             <div class="profile-info">
-                <input type="text" id="player-name-input" placeholder="Твоє ім'я" class="input-field">
-                <input type="text" id="player-class-input" placeholder="Клас" class="input-field">
+                <input type="text" id="player-name-input" placeholder="Твоє ім'я та прізвище" class="input-field">
+                <input type="text" id="player-class-input" placeholder="Клас (наприклад: 6А)" class="input-field">
                 <button class="btn-primary" onclick="saveProfile()">Зберегти</button>
                 <button class="btn-secondary" onclick="closeProfile()" style="margin-top: 10px;">Закрити</button>
             </div>
@@ -211,7 +299,7 @@
             name: localStorage.getItem('playerName') || 'Гравець',
             class: localStorage.getItem('playerClass') || '6 клас',
             completed: JSON.parse(localStorage.getItem('completedLevels')) || [],
-            scores: JSON.parse(localStorage.getItem('levelScores')) || {} // Тільки бали!
+            scores: JSON.parse(localStorage.getItem('levelScores')) || {}
         };
 
         // ============ ІНІЦІАЛІЗАЦІЯ ГРИ ============
@@ -339,7 +427,7 @@
             localStorage.setItem('levelScores', JSON.stringify(player.scores));
         }
 
-        // ============ ЛІДЕРБОРД ============
+        // ============ ЛІДЕРБОРД З ПРАВИЛЬНИМ РАНЖУВАННЯМ ============
         async function loadLeaderboard() {
             try {
                 const response = await fetch(GAME_CONFIG.apiUrl);
@@ -360,19 +448,46 @@
             const container = document.getElementById('leaderboard');
             container.innerHTML = '';
             
-            leaderboardData.slice(0, 10).forEach((item, index) => {
+            // Сортуємо за балами (від найбільших до найменших)
+            const sortedData = leaderboardData.sort((a, b) => b.total - a.total);
+            
+            // Логіка ранжування для однакових балів
+            let currentRank = 1;
+            let currentScore = null;
+            let displayedRank = 1;
+            
+            sortedData.slice(0, 10).forEach((item, index) => {
+                // Визначаємо місце залежно від балів
+                if (currentScore === null || item.total < currentScore) {
+                    currentRank = displayedRank;
+                    currentScore = item.total;
+                }
+                
+                // Перевіряємо, чи це поточний гравець
+                const isCurrentPlayer = item.name === player.name && item.class === player.class;
+                
+                // Створюємо рядок
                 const row = document.createElement('div');
                 row.className = 'leaderboard-row';
                 
-                const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : '';
-                const isCurrentPlayer = item.name === player.name && item.class === player.class;
+                // Перевіряємо, чи у гравця однакові бали з попереднім
+                const hasSameScore = index > 0 && item.total === sortedData[index - 1].total;
+                if (hasSameScore) {
+                    row.classList.add('lb-tie');
+                }
                 
                 if (isCurrentPlayer) {
                     row.classList.add('lb-you');
                 }
                 
+                // Визначаємо медаль
+                let medal = '';
+                if (currentRank === 1) medal = '🥇';
+                else if (currentRank === 2) medal = '🥈';
+                else if (currentRank === 3) medal = '🥉';
+                
                 row.innerHTML = `
-                    <div class="lb-rank">${index + 1}</div>
+                    <div class="lb-rank">${currentRank}</div>
                     <div class="lb-medal">${medal}</div>
                     <div class="lb-name">
                         ${item.name}
@@ -382,20 +497,32 @@
                 `;
                 
                 container.appendChild(row);
+                displayedRank++;
             });
         }
 
         function showDemoLeaderboard() {
+            // Демо дані з правильним ранжуванням
             const demoData = [
-                { name: "Аліса", class: "6А", total: 62 },
-                { name: "Максим", class: "6Б", total: 58 },
-                { name: "Софія", class: "6В", total: 54 },
-                { name: "Тимур", class: "6А", total: 48 },
-                { name: player.name, class: player.class, total: Object.values(player.scores).reduce((a, b) => a + b, 0) },
-                { name: "Олексій", class: "6Б", total: 42 },
-                { name: "Марія", class: "6В", total: 36 },
-                { name: "Денис", class: "6А", total: 30 }
+                { name: "Аліса", class: "6А", total: 12 },
+                { name: "Максим", class: "6Б", total: 10 },
+                { name: "Софія", class: "6В", total: 10 },
+                { name: "Тимур", class: "6А", total: 8 },
+                { name: "Олексій", class: "6Б", total: 6 },
+                { name: "Марія", class: "6В", total: 6 },
+                { name: "Денис", class: "6А", total: 6 },
+                { name: "Ірина", class: "6Б", total: 4 }
             ];
+            
+            // Додаємо поточного гравця, якщо його ще немає
+            const playerTotal = Object.values(player.scores).reduce((a, b) => a + b, 0);
+            const playerExists = demoData.some(item => 
+                item.name === player.name && item.class === player.class
+            );
+            
+            if (!playerExists && playerTotal > 0) {
+                demoData.push({ name: player.name, class: player.class, total: playerTotal });
+            }
             
             renderLeaderboard(demoData);
         }
@@ -406,7 +533,7 @@
                     name: player.name,
                     class: player.class,
                     theme: theme,
-                    points: score // Відправляємо бали (0-12)
+                    points: score
                 };
                 
                 await fetch(GAME_CONFIG.apiUrl, {
