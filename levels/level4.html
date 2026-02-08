@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рівень 5: Атмосферні опади</title>
+    <title>Рівень 4: Хмари та Вологість</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,140 +13,334 @@
             padding: 20px;
             text-align: center;
         }
-
-        .wheel-container {
+        
+        .game-title {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--accent-blue);
+            text-shadow: 0 2px 10px rgba(66, 135, 245, 0.4);
+        }
+        
+        .game-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+        
+        .humidity-game {
+            background: var(--glass-bg);
+            border-radius: 25px;
+            padding: 30px;
+            border: 3px solid var(--accent-blue);
+            box-shadow: 0 10px 40px rgba(66, 135, 245, 0.2);
+            margin-bottom: 30px;
             position: relative;
-            width: 320px;
-            height: 320px;
-            margin: 30px auto;
+            overflow: hidden;
         }
-
-        #wheel {
-            width: 100%;
+        
+        .sky-container {
+            height: 300px;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.8);
+            opacity: 0.9;
+            transition: all 0.5s ease;
+        }
+        
+        .cloud-small {
+            width: 80px;
+            height: 40px;
+        }
+        
+        .cloud-medium {
+            width: 120px;
+            height: 60px;
+        }
+        
+        .cloud-large {
+            width: 160px;
+            height: 80px;
+        }
+        
+        .humidity-meter {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 400px;
+            border: 2px solid var(--accent-blue);
+        }
+        
+        .humidity-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--accent-blue);
+            margin: 10px 0;
+            text-shadow: 0 0 10px rgba(66, 135, 245, 0.5);
+        }
+        
+        .humidity-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 30px;
+            margin: 25px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            width: 0%;
             height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                #FF9500 0% 20%,   /* Дощ */
-                #00FFFF 20% 40%,  /* Сніг */
-                #FF4081 40% 60%,  /* Град */
-                #C77DFF 60% 80%,  /* Іній */
-                #39FF14 80% 100%  /* Роса */
-            );
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+            background: linear-gradient(90deg, #4287f5, #42b4f5);
+            transition: width 0.5s ease;
+            position: relative;
         }
-
-        .wheel-arrow {
+        
+        .progress-text {
             position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 60px;
-            z-index: 10;
-        }
-
-        .wheel-labels {
-            position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            pointer-events: none;
-            font-size: 28px;
+            font-weight: 900;
+            color: white;
+            font-size: 14px;
         }
-
-        .current-precipitation {
-            font-size: 100px;
-            margin: 30px 0;
-            min-height: 120px;
-        }
-
-        .reaction-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+        
+        .controls {
+            display: flex;
+            justify-content: center;
             gap: 20px;
-            max-width: 500px;
-            margin: 30px auto;
+            margin: 30px 0;
+            flex-wrap: wrap;
         }
-
-        .reaction-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid var(--glass-border);
-            padding: 25px;
+        
+        .control-btn {
+            background: linear-gradient(45deg, #4287f5, #42b4f5);
+            border: none;
+            width: 140px;
+            height: 140px;
             border-radius: 20px;
-            font-size: 60px;
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
             cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 30px rgba(66, 135, 245, 0.4),
+                inset 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(66, 135, 245, 0.6),
+                inset 0 5px 15px rgba(255, 255, 255, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+            box-shadow: 
+                0 5px 20px rgba(66, 135, 245, 0.3),
+                inset 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .control-btn i {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .temp-btn {
+            background: linear-gradient(45deg, #f54242, #f5a742);
+        }
+        
+        .temp-btn:hover {
+            box-shadow: 
+                0 15px 40px rgba(245, 66, 66, 0.6),
+                inset 0 5px 15px rgba(255, 255, 255, 0.4);
+        }
+        
+        .condensation-btn {
+            background: linear-gradient(45deg, #42f563, #42f5e3);
+        }
+        
+        .condensation-btn:hover {
+            box-shadow: 
+                0 15px 40px rgba(66, 245, 99, 0.6),
+                inset 0 5px 15px rgba(255, 255, 255, 0.4);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent-blue);
+        }
+        
+        .instructions h3 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .cloud-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .cloud-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid var(--glass-border);
             transition: all 0.3s;
         }
-
-        .reaction-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        
+        .cloud-card.active {
+            background: rgba(66, 135, 245, 0.2);
+            border-color: var(--accent-blue);
+            transform: translateY(-5px);
         }
-
-        .reaction-btn.correct {
-            background: rgba(57, 255, 20, 0.4);
-            border-color: var(--accent-lime);
+        
+        .cloud-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: white;
         }
-
-        .reaction-btn.incorrect {
-            background: rgba(255, 0, 0, 0.4);
-            border-color: #FF0000;
-        }
-
-        .timer-bar {
-            height: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px auto;
-            max-width: 500px;
-        }
-
-        .timer-fill {
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, var(--accent-lime), var(--accent-cyan));
-            transition: width 0.1s linear;
-        }
-
-        .quiz-stats {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-value {
-            font-size: 28px;
+        
+        .cloud-name {
             font-weight: 900;
-            color: var(--accent-cyan);
+            margin-bottom: 5px;
+            font-size: 16px;
         }
-
-        #spin-btn {
-            padding: 18px 50px;
-            font-size: 24px;
-            margin: 20px 0;
+        
+        .cloud-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.3;
         }
-
+        
+        .humidity-required {
+            font-size: 12px;
+            color: var(--accent-lime);
+            margin-top: 5px;
+        }
+        
         .result-screen {
-            display: none;
             text-align: center;
             padding: 40px;
+            display: none;
         }
-
+        
         .result-emoji {
-            font-size: 100px;
+            font-size: 80px;
             margin-bottom: 20px;
+            animation: bounce 2s infinite;
         }
-
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
         .result-score {
             font-size: 48px;
             font-weight: 900;
-            color: var(--accent-cyan);
+            color: var(--accent-blue);
+            margin: 20px 0;
+        }
+        
+        .stars {
+            font-size: 36px;
+            color: gold;
+            margin: 20px 0;
+        }
+        
+        .completion-message {
+            font-size: 18px;
+            margin: 20px 0;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Анімації для хмар */
+        @keyframes floatCloud {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(1000px); }
+        }
+        
+        @keyframes rain {
+            0% { transform: translateY(-10px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(50px); opacity: 0; }
+        }
+        
+        .rain-drop {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(to bottom, transparent, #4287f5);
+            opacity: 0;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .info-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -157,77 +351,133 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="player-info">
-                <div class="username">🌧️ Атмосферні опади</div>
-                <div class="player-class">Рівень 5</div>
+                <div class="username">☁️ Хмари та Вологість</div>
+                <div class="player-class">Рівень 4</div>
             </div>
         </div>
         <div class="stats">
             <div class="stat-item">
-                <i class="fas fa-gamepad"></i>
-                <span id="round-display">0/10</span>
+                <i class="fas fa-clock"></i>
+                <span id="timer-display">02:00</span>
             </div>
             <div class="stat-item">
-                <i class="fas fa-trophy"></i>
-                <span id="score-display">0</span>
+                <i class="fas fa-tint"></i>
+                <span id="humidity-display">50%</span>
             </div>
         </div>
     </header>
-
+    
     <main class="game-container">
-        <div class="quiz-stats">
-            <div class="stat-item">
-                <div class="stat-value" id="current-round">1</div>
-                <div class="stat-label">раунд</div>
+        <h1 class="game-title">🌧️ Завдання: Створи хмари та дощ!</h1>
+        <p class="game-subtitle">Контролюй вологість та температуру, щоб утворити різні типи хмар</p>
+        
+        <div class="humidity-game">
+            <!-- Небесний контейнер -->
+            <div class="sky-container" id="sky-container">
+                <!-- Хмари будуть додаватися тут -->
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="correct-count">0</div>
-                <div class="stat-label">вдалі реакції</div>
+            
+            <!-- Відображення вологості -->
+            <div class="humidity-meter">
+                <div class="humidity-label">ВІДНОСНА ВОЛОГІСТЬ</div>
+                <div class="humidity-value" id="humidity-value">50%</div>
+                <div class="humidity-label">Температура: <span id="temperature-value">20°C</span></div>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="total-score">0</div>
-                <div class="stat-label">балів</div>
+            
+            <!-- Прогрес -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar" style="width: 0%;">
+                    <div class="progress-text" id="progress-text">0%</div>
+                </div>
+            </div>
+            
+            <!-- Панель інформації -->
+            <div class="info-panel">
+                <div class="info-item">
+                    <div class="info-value" id="cloud-count">0</div>
+                    <div class="info-label">ХМАРИ</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="cloud-type">-</div>
+                    <div class="info-label">ТИП ХМАРИ</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="points">0</div>
+                    <div class="info-label">БАЛИ</div>
+                </div>
+            </div>
+            
+            <!-- Елементи керування -->
+            <div class="controls">
+                <button class="control-btn" id="add-humidity-btn" onclick="addHumidity()">
+                    <i class="fas fa-tint"></i>
+                    Додати вологості
+                </button>
+                
+                <button class="control-btn temp-btn" id="change-temp-btn" onclick="changeTemperature()">
+                    <i class="fas fa-thermometer-half"></i>
+                    Змінити температуру
+                </button>
+                
+                <button class="control-btn condensation-btn" id="condensation-btn" onclick="triggerCondensation()">
+                    <i class="fas fa-cloud-rain"></i>
+                    Конденсація
+                </button>
+            </div>
+            
+            <!-- Типи хмар -->
+            <div class="cloud-types">
+                <div class="cloud-card" id="cloud-cumulus">
+                    <div class="cloud-icon">☁️</div>
+                    <div class="cloud-name">Кумулюс</div>
+                    <div class="cloud-desc">Пухнасті білі хмари, гарна погода</div>
+                    <div class="humidity-required">Вологість: 60-70%</div>
+                </div>
+                
+                <div class="cloud-card" id="cloud-stratus">
+                    <div class="cloud-icon">🌫️</div>
+                    <div class="cloud-name">Стратус</div>
+                    <div class="cloud-desc">Рівний шар хмар, похмура погода</div>
+                    <div class="humidity-required">Вологість: 80-90%</div>
+                </div>
+                
+                <div class="cloud-card" id="cloud-nimbus">
+                    <div class="cloud-icon">🌧️</div>
+                    <div class="cloud-name">Німбус</div>
+                    <div class="cloud-desc">Дощові хмари, сильні опади</div>
+                    <div class="humidity-required">Вологість: 95-100%</div>
+                </div>
+            </div>
+            
+            <!-- Інструкції -->
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> Як грати:</h3>
+                <p>1. Додавай вологість, щоб збільшити відсоток вологості в повітрі</p>
+                <p>2. Регулюй температуру для створення умов конденсації</p>
+                <p>3. Використовуй кнопку "Конденсація" для утворення хмар</p>
+                <p>4. Створи всі 3 типи хмар: <strong>Кумулюс, Стратус та Німбус</strong></p>
+                <p><strong>Ціль: Досягти 100% вологості та створити дощ!</strong></p>
             </div>
         </div>
-
-        <!-- Рулетка -->
-        <div class="wheel-container">
-            <div class="wheel-arrow">▼</div>
-            <div id="wheel"></div>
-            <div class="wheel-labels">
-                <div>🌧️</div>
-                <div>❄️</div>
-                <div>🧊</div>
-                <div>🌫️</div>
-                <div>💧</div>
-            </div>
-        </div>
-
-        <button class="btn-primary" id="spin-btn">Крутити рулетку! 🎰</button>
-
-        <!-- Поточний опад -->
-        <div class="current-precipitation" id="current-precipitation"></div>
-
-        <!-- Таймер реакції -->
-        <div class="timer-bar" id="reaction-timer" style="display: none;">
-            <div class="timer-fill" id="timer-fill"></div>
-        </div>
-
-        <!-- Кнопки реакції -->
-        <div class="reaction-buttons" id="reaction-buttons" style="display: none;">
-            <button class="reaction-btn" data-reaction="umbrella">☔</button>
-            <button class="reaction-btn" data-reaction="jacket">🧥</button>
-            <button class="reaction-btn" data-reaction="house">🏠</button>
-            <button class="reaction-btn" data-reaction="gloves">🧤</button>
-        </div>
-
+        
         <!-- Екран результатів -->
         <div id="result-screen" class="result-screen">
-            <div class="result-emoji" id="result-emoji">🎉</div>
-            <h2 id="result-title">Вітаємо!</h2>
-            <p id="result-message">Ви завершили рівень!</p>
+            <div class="result-emoji" id="result-emoji">⛈️</div>
+            <h2 id="result-title">Результат!</h2>
+            
+            <div class="completion-message" id="completion-message">
+                Ти створив <span id="final-clouds">0</span> хмар та набрав <span id="final-points">0</span> балів!
+            </div>
+            
             <div class="result-score" id="final-score">0 балів</div>
-            <p>Зірок отримано: <span id="stars-earned">0/3</span></p>
-
+            
+            <div class="stars" id="stars-display">☆☆☆</div>
+            
+            <div class="completion-message">
+                Процес утворення хмар:<br>
+                <strong>Випаровування → Конденсація → Утворення хмари → Опади</strong>
+            </div>
+            
             <div style="margin-top: 40px;">
                 <button class="btn-primary" onclick="finishLevel()" style="padding: 15px 40px; font-size: 20px;">
                     <i class="fas fa-trophy"></i> Завершити рівень
@@ -235,202 +485,565 @@
             </div>
         </div>
     </main>
-
+    
     <script>
-        // ============ ДАНІ ОПАДІВ ============
-        const precipitations = [
-            { name: "Дощ", emoji: "🌧️", correct: "umbrella" },      // ☔
-            { name: "Сніг", emoji: "❄️", correct: "jacket" },       // 🧥
-            { name: "Град", emoji: "🧊", correct: "house" },         // 🏠
-            { name: "Іній", emoji: "🌫️", correct: "gloves" },       // 🧤
-            { name: "Роса", emoji: "💧", correct: "none" }          // немає захисту, просто радіти (додамо фейкову кнопку або автоматично)
-        ];
-
-        // Для роси — спеціальна логіка: будь-яка кнопка або автоматично +бали
-        // Зробимо: якщо роса — автоматично +10 балів без вибору (сюрприз!)
-
-        // ============ ЗМІННІ ============
-        let currentRound = 0;
-        let score = 0;
-        let correctReactions = 0;
-        const totalRounds = 10;
-        let currentPrecipitation = null;
-        let reactionTimeLeft = 0;
-        let reactionInterval;
-
+        // ============ ЗМІННІ ГРИ ============
+        let humidity = 50;      // Початкова вологість (%)
+        let temperature = 20;   // Температура (°C)
+        let clouds = [];        // Масив створених хмар
+        let cloudCount = 0;     // Кількість хмар
+        let points = 0;         // Бали
+        let progress = 0;       // Прогрес (0-100%)
+        let timeLeft = 120;     // Час у секундах (2 хвилини)
+        let timerInterval;
+        let gameCompleted = false;
+        
+        // Типи хмар та їх вимоги
+        const CLOUD_TYPES = {
+            CUMULUS: { name: "Кумулюс", humidity: 65, temp: 15, points: 4, icon: "☁️" },
+            STRATUS: { name: "Стратус", humidity: 85, temp: 10, points: 6, icon: "🌫️" },
+            NIMBUS: { name: "Німбус", humidity: 95, temp: 5, points: 8, icon: "🌧️" }
+        };
+        
+        let createdCloudTypes = []; // Типи хмар, які вже створені
+        
         // ============ ІНІЦІАЛІЗАЦІЯ ============
         function initGame() {
-            updateStats();
-            document.getElementById('spin-btn').addEventListener('click', spinWheel);
+            updateDisplay();
+            startTimer();
+            createInitialClouds();
         }
-
-        // ============ КРУТИТИ КОЛЕСО ============
-        function spinWheel() {
-            if (currentRound >= totalRounds) return;
-
-            const wheel = document.getElementById('wheel');
-            const randomDegrees = Math.floor(Math.random() * 3600) + 720; // 2-10 обертів
-            wheel.style.transform = `rotate(${randomDegrees}deg)`;
-
-            setTimeout(() => {
-                // Визначаємо сектор (360° / 5 = 72° на сектор)
-                let rotation = randomDegrees % 360;
-                let sector = Math.floor((360 - rotation + 36) / 72) % 5; // +36 для центру стрілки
-                currentPrecipitation = precipitations[sector];
-
-                showPrecipitation();
-            }, 4200);
-        }
-
-        // ============ ПОКАЗАТИ ОПАД ============
-        function showPrecipitation() {
-            currentRound++;
-            updateStats();
-
-            document.getElementById('current-precipitation').textContent = currentPrecipitation.emoji;
-
-            if (currentPrecipitation.name === "Роса") {
-                // Сюрприз — автоматично вдала реакція
-                setTimeout(() => {
-                    score += 20; // бонус за сюрприз
-                    correctReactions++;
-                    updateStats();
-                    showMessage('Роса! Приємний ранок 🌸 +20 балів!', 'success');
-                    nextRound();
-                }, 2000);
-                return;
-            }
-
-            // Звичайна реакція
-            document.getElementById('reaction-buttons').style.display = 'grid';
-            document.getElementById('reaction-timer').style.display = 'block';
-            document.getElementById('timer-fill').style.width = '100%';
-
-            reactionTimeLeft = 50; // 5 секунд (50 * 100ms)
-            reactionInterval = setInterval(updateReactionTimer, 100);
-
-            // Слухачі на кнопки
-            document.querySelectorAll('.reaction-btn').forEach(btn => {
-                btn.onclick = () => checkReaction(btn.dataset.reaction);
-            });
-        }
-
-        // ============ ТАЙМЕР РЕАКЦІЇ ============
-        function updateReactionTimer() {
-            reactionTimeLeft--;
-            document.getElementById('timer-fill').style.width = (reactionTimeLeft / 50 * 100) + '%';
-
-            if (reactionTimeLeft <= 0) {
-                clearInterval(reactionInterval);
-                checkReaction(null); // не встиг
-            }
-        }
-
-        // ============ ПЕРЕВІРКА РЕАКЦІЇ ============
-        function checkReaction(chosen) {
-            clearInterval(reactionInterval);
-            document.getElementById('reaction-buttons').style.display = 'none';
-            document.getElementById('reaction-timer').style.display = 'none';
-
-            const isCorrect = chosen === currentPrecipitation.correct;
-
-            if (isCorrect) {
-                score += 15 + Math.floor(reactionTimeLeft / 5); // бонус за швидкість
-                correctReactions++;
-                showMessage('Вдало! Ти в безпеці 😎', 'success');
-                document.querySelector(`.reaction-btn[data-reaction="${chosen}"]`).classList.add('correct');
-            } else {
-                showMessage(chosen === null ? 'Не встиг! 😅' : 'Ні, це не допоможе! 🙈', 'info');
-                if (chosen) {
-                    document.querySelector(`.reaction-btn[data-reaction="${chosen}"]`).classList.add('incorrect');
+        
+        // ============ ТАЙМЕР ============
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimeDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (!gameCompleted) {
+                        finishGame();
+                    }
                 }
-            }
-
-            updateStats();
-            setTimeout(nextRound, 2500);
+            }, 1000);
         }
-
-        // ============ НАСТУПНИЙ РАУНД ============
-        function nextRound() {
-            document.querySelectorAll('.reaction-btn').forEach(btn => {
-                btn.classList.remove('correct', 'incorrect');
-            });
-
-            document.getElementById('current-precipitation').textContent = '';
-
-            if (currentRound >= totalRounds) {
-                finishGame();
+        
+        // ============ СТВОРЕННЯ ПОЧАТКОВИХ ХМАР ============
+        function createInitialClouds() {
+            const sky = document.getElementById('sky-container');
+            
+            // Створюємо декілька фонових хмар
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    createCloud('background', i * 100, 50 + i * 30);
+                }, i * 500);
+            }
+        }
+        
+        // ============ ДОДАВАННЯ ВОЛОГОСТІ ============
+        function addHumidity() {
+            if (gameCompleted) return;
+            
+            // Збільшуємо вологість
+            humidity = Math.min(humidity + 8, 100);
+            
+            // Додаємо бали
+            points += 1;
+            
+            // Оновлюємо прогрес
+            progress = Math.min((humidity / 100) * 50 + (cloudCount * 10), 100);
+            
+            // Анімація кнопки
+            animateButton('add-humidity-btn');
+            
+            // Створюємо ефект крапель
+            createHumidityEffect();
+            
+            // Оновлюємо відображення
+            updateDisplay();
+        }
+        
+        // ============ ЗМІНА ТЕМПЕРАТУРИ ============
+        function changeTemperature() {
+            if (gameCompleted) return;
+            
+            // Змінюємо температуру (випадкове зниження)
+            temperature -= Math.floor(Math.random() * 5) + 1;
+            if (temperature < -5) temperature = -5; // Мінімальна температура
+            
+            // Додаємо бали
+            points += 1;
+            
+            // Оновлюємо прогрес
+            progress = Math.min((humidity / 100) * 50 + (cloudCount * 10), 100);
+            
+            // Анімація кнопки
+            animateButton('change-temp-btn');
+            
+            // Перевіряємо, чи можна створити хмару
+            checkCloudCreation();
+            
+            // Оновлюємо відображення
+            updateDisplay();
+        }
+        
+        // ============ КОНДЕНСАЦІЯ ============
+        function triggerCondensation() {
+            if (gameCompleted) return;
+            
+            // Перевіряємо умови для конденсації
+            if (humidity >= 60 && temperature <= 15) {
+                // Знаходимо тип хмари, який можна створити
+                let cloudToCreate = null;
+                
+                if (humidity >= CLOUD_TYPES.NIMBUS.humidity && temperature <= CLOUD_TYPES.NIMBUS.temp) {
+                    cloudToCreate = CLOUD_TYPES.NIMBUS;
+                } else if (humidity >= CLOUD_TYPES.STRATUS.humidity && temperature <= CLOUD_TYPES.STRATUS.temp) {
+                    cloudToCreate = CLOUD_TYPES.STRATUS;
+                } else if (humidity >= CLOUD_TYPES.CUMULUS.humidity && temperature <= CLOUD_TYPES.CUMULUS.temp) {
+                    cloudToCreate = CLOUD_TYPES.CUMULUS;
+                }
+                
+                // Якщо знайшли підходящий тип хмари
+                if (cloudToCreate && !createdCloudTypes.includes(cloudToCreate.name)) {
+                    // Створюємо хмару
+                    createCloud(cloudToCreate.name, Math.random() * 600, 100 + Math.random() * 100);
+                    
+                    // Додаємо тип хмари до створених
+                    createdCloudTypes.push(cloudToCreate.name);
+                    
+                    // Додаємо бали
+                    points += cloudToCreate.points;
+                    cloudCount++;
+                    
+                    // Оновлюємо прогрес
+                    progress = Math.min((humidity / 100) * 50 + (cloudCount * 15), 100);
+                    
+                    // Підсвічуємо картку хмари
+                    highlightCloudCard(cloudToCreate.name);
+                    
+                    // Якщо створено всі типи хмар
+                    if (createdCloudTypes.length >= 3) {
+                        progress = 100;
+                        setTimeout(() => {
+                            gameCompleted = true;
+                            clearInterval(timerInterval);
+                            finishGame();
+                        }, 1000);
+                    }
+                }
             } else {
-                document.getElementById('spin-btn').disabled = false;
+                // Показуємо повідомлення про невдалу спробу
+                showMessage("Недостатня вологість або температура занадто висока!");
+            }
+            
+            // Анімація кнопки
+            animateButton('condensation-btn');
+            
+            // Оновлюємо відображення
+            updateDisplay();
+        }
+        
+        // ============ СТВОРЕННЯ ХМАРИ ============
+        function createCloud(type, x, y) {
+            const sky = document.getElementById('sky-container');
+            
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            
+            // Визначаємо розмір за типом
+            if (type === 'background') {
+                cloud.classList.add('cloud-small');
+                cloud.style.background = 'rgba(255, 255, 255, 0.6)';
+                cloud.style.opacity = '0.7';
+            } else {
+                // Визначаємо розмір за типом хмари
+                if (type === CLOUD_TYPES.CUMULUS.name) {
+                    cloud.classList.add('cloud-medium');
+                    cloud.style.background = 'white';
+                } else if (type === CLOUD_TYPES.STRATUS.name) {
+                    cloud.classList.add('cloud-large');
+                    cloud.style.background = 'rgba(200, 200, 200, 0.9)';
+                } else if (type === CLOUD_TYPES.NIMBUS.name) {
+                    cloud.classList.add('cloud-large');
+                    cloud.style.background = 'rgba(100, 100, 120, 0.9)';
+                    // Додаємо дощ до німбуса
+                    setTimeout(() => createRain(x, y), 500);
+                }
+                
+                // Додаємо текст з типом хмари
+                const cloudText = document.createElement('div');
+                cloudText.textContent = type;
+                cloudText.style.position = 'absolute';
+                cloudText.style.bottom = '-25px';
+                cloudText.style.left = '0';
+                cloudText.style.right = '0';
+                cloudText.style.textAlign = 'center';
+                cloudText.style.fontSize = '12px';
+                cloudText.style.fontWeight = 'bold';
+                cloudText.style.color = 'white';
+                cloudText.style.textShadow = '0 1px 3px rgba(0,0,0,0.5)';
+                cloud.appendChild(cloudText);
+            }
+            
+            // Встановлюємо позицію
+            cloud.style.left = `${x}px`;
+            cloud.style.top = `${y}px`;
+            
+            // Додаємо анімацію руху
+            if (type === 'background') {
+                const duration = 60 + Math.random() * 60;
+                cloud.style.animation = `floatCloud ${duration}s linear infinite`;
+            } else {
+                // Анімація з'явлення
+                cloud.style.transform = 'scale(0)';
+                setTimeout(() => {
+                    cloud.style.transition = 'transform 1s ease';
+                    cloud.style.transform = 'scale(1)';
+                }, 100);
+            }
+            
+            sky.appendChild(cloud);
+            clouds.push(cloud);
+            
+            // Повертаємо хмару для подальшого використання
+            return cloud;
+        }
+        
+        // ============ СТВОРЕННЯ ДОЩУ ============
+        function createRain(x, y) {
+            const sky = document.getElementById('sky-container');
+            
+            // Створюємо кілька крапель дощу
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const drop = document.createElement('div');
+                    drop.className = 'rain-drop';
+                    drop.style.left = `${x + 40 + Math.random() * 80}px`;
+                    drop.style.top = `${y + 80}px`;
+                    drop.style.animation = `rain ${0.5 + Math.random() * 0.5}s linear forwards`;
+                    drop.style.animationDelay = `${Math.random() * 0.5}s`;
+                    
+                    sky.appendChild(drop);
+                    
+                    // Видаляємо краплю після анімації
+                    setTimeout(() => {
+                        if (drop.parentNode) {
+                            drop.parentNode.removeChild(drop);
+                        }
+                    }, 2000);
+                }, i * 100);
             }
         }
-
-        // ============ ОНОВЛЕННЯ СТАТИСТИКИ ============
-        function updateStats() {
-            document.getElementById('current-round').textContent = currentRound + 1;
-            document.getElementById('round-display').textContent = `${currentRound}/${totalRounds}`;
-            document.getElementById('correct-count').textContent = correctReactions;
-            document.getElementById('total-score').textContent = score;
-            document.getElementById('score-display').textContent = score;
+        
+        // ============ ПЕРЕВІРКА СТВОРЕННЯ ХМАРИ ============
+        function checkCloudCreation() {
+            // Автоматично створюємо хмари при досягненні умов
+            if (!createdCloudTypes.includes(CLOUD_TYPES.CUMULUS.name) && 
+                humidity >= CLOUD_TYPES.CUMULUS.humidity && 
+                temperature <= CLOUD_TYPES.CUMULUS.temp) {
+                
+                setTimeout(() => {
+                    if (!gameCompleted) {
+                        showMessage(`Утворилася хмара: ${CLOUD_TYPES.CUMULUS.name}!`);
+                        createCloud(CLOUD_TYPES.CUMULUS.name, 100 + Math.random() * 400, 120);
+                        createdCloudTypes.push(CLOUD_TYPES.CUMULUS.name);
+                        points += CLOUD_TYPES.CUMULUS.points;
+                        cloudCount++;
+                        highlightCloudCard(CLOUD_TYPES.CUMULUS.name);
+                        updateDisplay();
+                    }
+                }, 500);
+            }
         }
-
+        
+        // ============ ПІДСВІТЛЕННЯ КАРТКИ ХМАРИ ============
+        function highlightCloudCard(cloudName) {
+            const cardId = `cloud-${cloudName.toLowerCase()}`;
+            const card = document.getElementById(cardId);
+            
+            if (card) {
+                card.classList.add('active');
+                
+                // Прибираємо підсвітку через 3 секунди
+                setTimeout(() => {
+                    card.classList.remove('active');
+                }, 3000);
+            }
+        }
+        
+        // ============ АНІМАЦІЯ КНОПКИ ============
+        function animateButton(buttonId) {
+            const button = document.getElementById(buttonId);
+            
+            button.style.animation = 'pump 0.3s';
+            setTimeout(() => {
+                button.style.animation = '';
+            }, 300);
+        }
+        
+        // ============ ЕФЕКТ ВОЛОГОСТІ ============
+        function createHumidityEffect() {
+            const sky = document.getElementById('sky-container');
+            
+            // Створюємо ефект випаровування
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const bubble = document.createElement('div');
+                    bubble.style.cssText = `
+                        position: absolute;
+                        width: 10px;
+                        height: 10px;
+                        background: radial-gradient(circle, rgba(66, 135, 245, 0.8), rgba(66, 180, 245, 0.4));
+                        border-radius: 50%;
+                        bottom: 10px;
+                        left: ${100 + Math.random() * 600}px;
+                        opacity: 0.8;
+                        animation: bubbleUp 2s ease-out forwards;
+                    `;
+                    
+                    sky.appendChild(bubble);
+                    
+                    // Видаляємо бульбашку після анімації
+                    setTimeout(() => {
+                        if (bubble.parentNode) {
+                            bubble.parentNode.removeChild(bubble);
+                        }
+                    }, 2000);
+                }, i * 100);
+            }
+            
+            // Додаємо стиль для анімації бульбашок
+            if (!document.getElementById('bubble-style')) {
+                const style = document.createElement('style');
+                style.id = 'bubble-style';
+                style.textContent = `
+                    @keyframes bubbleUp {
+                        0% {
+                            transform: translateY(0) scale(1);
+                            opacity: 0.8;
+                        }
+                        100% {
+                            transform: translateY(-150px) scale(0.5);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // ============ ПОКАЗ ПОВІДОМЛЕНЬ ============
+        function showMessage(text) {
+            // Створюємо повідомлення
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                z-index: 10000;
+                font-weight: bold;
+                border: 2px solid var(--accent-blue);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                animation: fadeInOut 2s forwards;
+            `;
+            
+            document.body.appendChild(message);
+            
+            // Видаляємо повідомлення через 2 секунди
+            setTimeout(() => {
+                if (message.parentNode) {
+                    message.parentNode.removeChild(message);
+                }
+            }, 2000);
+            
+            // Додаємо стиль для анімації
+            if (!document.getElementById('message-style')) {
+                const style = document.createElement('style');
+                style.id = 'message-style';
+                style.textContent = `
+                    @keyframes fadeInOut {
+                        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                        20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                        80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                        100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // ============ ОНОВЛЕННЯ ВІДОБРАЖЕННЯ ============
+        function updateDisplay() {
+            // Вологість
+            document.getElementById('humidity-value').textContent = 
+                `${Math.round(humidity)}%`;
+            document.getElementById('humidity-display').textContent = 
+                `${Math.round(humidity)}%`;
+            
+            // Температура
+            document.getElementById('temperature-value').textContent = 
+                `${temperature}°C`;
+            
+            // Прогрес
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = 
+                `${Math.round(progress)}%`;
+            
+            // Статистика
+            document.getElementById('cloud-count').textContent = cloudCount;
+            document.getElementById('points').textContent = points;
+            
+            // Тип хмари
+            let currentCloudType = '-';
+            if (humidity >= CLOUD_TYPES.NIMBUS.humidity) {
+                currentCloudType = CLOUD_TYPES.NIMBUS.name;
+            } else if (humidity >= CLOUD_TYPES.STRATUS.humidity) {
+                currentCloudType = CLOUD_TYPES.STRATUS.name;
+            } else if (humidity >= CLOUD_TYPES.CUMULUS.humidity) {
+                currentCloudType = CLOUD_TYPES.CUMULUS.name;
+            }
+            document.getElementById('cloud-type').textContent = currentCloudType;
+            
+            // Час
+            updateTimeDisplay();
+        }
+        
+        function updateTimeDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer-display').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
         // ============ ЗАВЕРШЕННЯ ГРИ ============
         function finishGame() {
-            document.getElementById('spin-btn').style.display = 'none';
-            document.getElementById('result-screen').style.display = 'block';
-
-            const percentage = (correctReactions / totalRounds) * 100;
+            gameCompleted = true;
+            clearInterval(timerInterval);
+            
+            // Приховуємо ігрову зону
+            document.querySelector('.humidity-game').style.display = 'none';
+            
+            // Показуємо екран результатів
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.style.display = 'block';
+            
+            // Розраховуємо бали
+            let score = points;
             let stars = 0;
-            let emoji = '😢';
+            let emoji = '☁️';
             let title = 'Можна краще!';
-            let message = 'Спробуй ще раз!';
-
-            if (percentage >= 90) {
-                stars = 3;
-                emoji = '🏆';
-                title = 'Супер!';
-                message = 'Ти майстер опадів!';
-            } else if (percentage >= 70) {
-                stars = 2;
-                emoji = '🎉';
-                title = 'Чудово!';
-                message = 'Ти добре реагуєш!';
-            } else if (percentage >= 50) {
+            let message = '';
+            
+            // Визначаємо зірки
+            if (createdCloudTypes.length >= 3) {
+                if (score >= 30) {
+                    stars = 3;
+                    emoji = '⛈️';
+                    title = 'Відмінно!';
+                    message = 'Ти майстер хмаротворення!';
+                } else if (score >= 20) {
+                    stars = 2;
+                    emoji = '🌧️';
+                    title = 'Добре!';
+                    message = 'Чудово впорався з конденсацією!';
+                } else {
+                    stars = 1;
+                    emoji = '🌫️';
+                    title = 'Непогано!';
+                    message = 'Ти створив всі типи хмар!';
+                }
+            } else if (createdCloudTypes.length >= 2) {
                 stars = 1;
-                emoji = '👍';
+                emoji = '☁️';
                 title = 'Непогано!';
-                message = 'Ти вже багато знаєш!';
+                message = 'Ти створив 2 типи хмар!';
+            } else {
+                stars = 0;
+                emoji = '🌤️';
+                title = 'Спробуй ще!';
+                message = 'Потрібно більше вологості!';
             }
-
+            
+            // Максимум 12 балів за рівень
+            score = Math.min(score, 12);
+            
+            // Оновлюємо екран результатів
             document.getElementById('result-emoji').textContent = emoji;
             document.getElementById('result-title').textContent = title;
-            document.getElementById('result-message').textContent = message;
+            document.getElementById('completion-message').innerHTML = 
+                `Ти створив <span id="final-clouds">${createdCloudTypes.length}</span> хмар та набрав <span id="final-points">${points}</span> балів!<br>${message}`;
             document.getElementById('final-score').textContent = `${score} балів`;
-            document.getElementById('stars-earned').textContent = `${stars}/3`;
-
+            
+            // Відображаємо зірки
+            let starsHTML = '';
+            for (let i = 0; i < 3; i++) {
+                starsHTML += i < stars ? '★' : '☆';
+            }
+            document.getElementById('stars-display').innerHTML = starsHTML;
+            
+            // Зберігаємо результати
             saveResults(score, stars);
         }
-
-        // ============ ЗБЕРЕЖЕННЯ ============
-        function saveResults(finalScore, stars) {
-            localStorage.setItem('level5_score', finalScore);
-            localStorage.setItem('level5_stars', stars);
-            localStorage.setItem('level5_completed', 'true');
+        
+        // ============ ЗБЕРЕЖЕННЯ РЕЗУЛЬТАТІВ ============
+        function saveResults(score, stars) {
+            localStorage.setItem('level4_score', score);
+            localStorage.setItem('level4_stars', stars);
+            localStorage.setItem('level4_completed', 'true');
+            
+            console.log(`Рівень 4 завершено: ${score} балів, ${stars} зірок`);
         }
-
+        
         // ============ ЗАВЕРШЕННЯ РІВНЯ ============
         function finishLevel() {
-            const score = parseInt(localStorage.getItem('level5_score')) || 0;
-            const stars = parseInt(localStorage.getItem('level5_stars')) || 0;
-            window.location.href = `../game.html?level=5&score=${score}&stars=${stars}`;
+            const score = parseInt(localStorage.getItem('level4_score')) || 0;
+            const stars = parseInt(localStorage.getItem('level4_stars')) || 0;
+            
+            window.location.href = `../game.html?level=4&score=${score}&stars=${stars}`;
         }
-
-        // ============ ПОВІДОМЛЕННЯ ============
-        function showMessage(text, type) {
-            alert(text); // можна замінити на красивий toast пізніше
-        }
-
+        
+        // ============ ЗАПУСК ГРИ ============
         document.addEventListener('DOMContentLoaded', initGame);
+        
+        // Додаємо можливість натискати клавіші для керування
+        document.addEventListener('keydown', (e) => {
+            if (gameCompleted) return;
+            
+            switch(e.key) {
+                case '1':
+                    e.preventDefault();
+                    addHumidity();
+                    break;
+                case '2':
+                    e.preventDefault();
+                    changeTemperature();
+                    break;
+                case '3':
+                case ' ':
+                    e.preventDefault();
+                    triggerCondensation();
+                    break;
+            }
+        });
+        
+        // Додаємо можливість тапу на мобільних пристроях
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                // Викликаємо функцію залежно від id кнопки
+                if (btn.id === 'add-humidity-btn') addHumidity();
+                else if (btn.id === 'change-temp-btn') changeTemperature();
+                else if (btn.id === 'condensation-btn') triggerCondensation();
+            });
+        });
     </script>
 </body>
 </html>
